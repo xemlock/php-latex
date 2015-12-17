@@ -9,5 +9,10 @@
             "email": "xemlock@gmail.com"
         }
     ],
-    "require": {}
+    "require": {},
+    "autoload": {
+        "psr-0": {
+            "psr-0": { "PhpLatex_": "library" }
+        }
+    }
 }
