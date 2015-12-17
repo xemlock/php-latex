@@ -1,0 +1,13 @@
+{
+    "name": "xemlock/php-latex",
+    "description": "LaTeX parser and renderer",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "xemlock",
+            "email": "xemlock@gmail.com"
+        }
+    ],
+    "require": {}
+}
