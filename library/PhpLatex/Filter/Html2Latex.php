@@ -31,10 +31,11 @@ class PhpLatex_Filter_ParagraphList implements Countable, IteratorAggregate
                 if ($this->_nl) {
                     if ($text !== ' ') {
                         $this->_nl = false;
-                        $par = rtrim($this->_paragraphs[$this->_pos]) . "\\\\\n" . ltrim($text);
+                        $par = $this->_paragraphs[$this->_pos] . "\\\\\n" . $text;
                     } else {
                         // do nothing - do not append space-only string or line break
                         // wait for more text to come
+                        $par = $text;
                     }
                 } else {
                     // append new text to existing paragraph, merge spaces on the
@@ -46,7 +47,7 @@ class PhpLatex_Filter_ParagraphList implements Countable, IteratorAggregate
                 // new paragraph must start with a non-space character,
                 // no line break at the beginning of the paragraph, trailing
                 // spaces are allowed (there will be no more than 2)
-                $par = ltrim($text);
+                $par = $text;
             }
 
             if (strlen($par)) {
@@ -56,6 +57,7 @@ class PhpLatex_Filter_ParagraphList implements Countable, IteratorAggregate
             // echo '[' . @$this->_paragraphs[$this->_pos] . ']', "\n\n";
         }
 
+
         return $this;
     }
 
@@ -63,7 +65,7 @@ class PhpLatex_Filter_ParagraphList implements Countable, IteratorAggregate
     {
         if ($this->_nl) {
             $this->newParagraph();
-        } elseif (isset($this->_paragraphs[$this->_pos])) {
+        } elseif (isset($this->_paragraphs[$this->_pos]) && !ctype_space($this->_paragraphs[$this->_pos])) {
             // line break can only be placed in a non-empty paragraph
             $this->_nl = true;
         }
@@ -100,7 +102,7 @@ class PhpLatex_Filter_ParagraphList implements Countable, IteratorAggregate
     public function __toString()
     {
         if (count($this->_paragraphs)) {
-            return implode("\n\n", array_map('trim', $this->_paragraphs)) . "\n\n";
+            return preg_replace('/[ ]+/', ' ', implode("\n\n", $this->_paragraphs)) . "\n\n";
         }
         return '';
     }
@@ -258,8 +260,8 @@ class PhpLatex_Filter_Html2Latex
             $par->clear();
         }
 
-        if ($flags & self::TRIM) {
-            $latex = trim($latex);
+        if ($flags & self::TRIM) { // trim only new lines
+            $latex = str_replace("\n", '', $latex);
         }
 
         return $latex;
