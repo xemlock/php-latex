@@ -25,7 +25,7 @@ abstract class PhpLatex_Renderer_Abstract
 
                 case PhpLatex_Parser::TYPE_TEXT:
                     // make sure text is properly escaped
-                    $source = Latex_Utils::escape($node->value);
+                    $source = PhpLatex_Utils::escape($node->value);
                     return $source;
 
                 case PhpLatex_Parser::TYPE_GROUP:
