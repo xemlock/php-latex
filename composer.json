@@ -11,8 +11,6 @@
     ],
     "require": {},
     "autoload": {
-        "psr-0": {
-            "psr-0": { "PhpLatex_": "library" }
-        }
+        "psr-0": { "PhpLatex_": "library" }
     }
 }
