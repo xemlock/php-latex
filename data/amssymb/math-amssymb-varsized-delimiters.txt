@@ -1,0 +1,4 @@
+\lvert
+\lVert
+\rvert
+\rVert

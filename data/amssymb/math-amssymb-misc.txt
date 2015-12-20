@@ -1,0 +1,14 @@
+\angle
+\Box
+\dashleftarrow
+\dashrightarrow
+\Diamond
+\hbar
+\llcorner
+\lrcorner
+\mho
+\rightleftharpoons
+\sqsubset
+\sqsupset
+\ulcorner
+\urcorner

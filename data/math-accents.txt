@@ -1,0 +1,10 @@
+\acute{a}
+\bar{a}
+\breve{a}
+\check{a}
+\ddot{a}
+\dot{a}
+\grave{a}
+\hat{a}
+\tilde{a}
+\vec{a}

@@ -1,0 +1,4 @@
+\checkmark
+\circledR
+\maltese
+\yen

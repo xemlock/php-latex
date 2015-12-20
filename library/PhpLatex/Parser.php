@@ -56,21 +56,21 @@ class PhpLatex_Parser
     protected $_environs = array();
     protected $_commands = array();
 
-    protected $_skipUndefinedCommands = false;
-    protected $_skipUndefinedEnvirons = false;
+    protected $_skipUndefinedCommands = true;
+    protected $_skipUndefinedEnvirons = true;
 
     protected $refs = array();
 
     public function __construct()
     {
-        $this->_commands = require dirname(__FILE__) . '/commands.php';
+        $this->addCommands(require dirname(__FILE__) . '/commands.php');
         $this->_environs = require dirname(__FILE__) . '/environs.php';
     }
 
     public function addCommand($name, array $options) // {{{
     {
         if (!preg_match('/^\\\\([a-zA-Z]+|[^a-zA-Z])$/', $name)) {
-            throw new InvalidArgumentException('Invalid command name: ' . $name);
+            throw new InvalidArgumentException(sprintf('Invalid command name: "%s"', $name));
         }
 
         if (isset($options['mode'])) {
@@ -99,6 +99,7 @@ class PhpLatex_Parser
         $this->_commands[$name] = array(
             'mode' => $mode,
             'numArgs' => isset($options['numArgs']) ? intval($options['numArgs']) : 0,
+            'numOptArgs' => isset($options['numOptArgs']) ? intval($options['numOptArgs']) : 0,
             'parseArgs' => !isset($options['parseArgs']) || $options['parseArgs'], // parse by default
         );
         return $this;

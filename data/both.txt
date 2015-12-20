@@ -1,0 +1,15 @@
+\#
+\$
+\\
+\_
+\copyright
+\dag
+\ddag
+\dots
+\newline
+\P
+\pounds
+\S
+\textsuperscript{a}
+\{
+\}
