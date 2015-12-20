@@ -1,6 +1,6 @@
 <?php
 
-class PhpLatex_Renderer_HtmlTest extends PHPUnit_Framework_TestCase
+class PhpLatex_Test_Renderer_HtmlTest extends PHPUnit_Framework_TestCase
 {
     public function testRenderer()
     {
