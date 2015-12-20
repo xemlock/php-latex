@@ -15,6 +15,11 @@ class PhpLatex_Renderer_Html extends PhpLatex_Renderer_Abstract
 
     protected $_par = array();
 
+    /**
+     * @var PhpLatex_Renderer_Typestyle
+     */
+    protected $_typestyle;
+
     protected function _renderItem($node, PhpLatex_Utils_PeekableIterator $it) // {{{
     {
         $html = '';
@@ -475,45 +480,8 @@ class PhpLatex_Renderer_Html extends PhpLatex_Renderer_Abstract
                     }
                     break;
 
-                case '\\textbf':
-                case '\\textit':
-                case '\\emph':
-                case '\\textrm':
-                case '\\texttt':
-                case '\\textsf':
-                    foreach ($node->getChildren() as $arg) {
-                        $render = $this->_renderNode($arg, self::FLAG_ARG);
-                        switch ($node->value) {
-                            case '\\textbf':
-                                $style = 'font-weight:bold';
-                                break;
-
-                            case '\\textit':
-                            case '\\emph':
-                                $style = 'font-style:italic';
-                                break;
-
-                            case '\\textrm':
-                                $style = 'font-family:serif';
-                                break;
-
-                            case '\\texttt':
-                                $style = 'font-family:monospace';
-                                break;
-
-                            case '\\textsf':
-                                $style = 'font-family:sans-serif';
-                                break;
-
-                            default:
-                                $style = '';
-                                break;
-                        }
-                        if ($style) {
-                            return '<span style="' . $style . '">' . $render . '</span>';
-                        }
-                        return $render;
-                    }
+                default:
+                    return $this->_renderStyled($node);
                     break;
             }
         }
@@ -522,6 +490,190 @@ class PhpLatex_Renderer_Html extends PhpLatex_Renderer_Abstract
         if (method_exists($this, $method)) {
             return $this->$method($node, $flags);
         }
+    }
+
+    protected $_initialTypestyle;
+
+    protected function _pushTypestyle()
+    {
+        if (!$this->_initialTypestyle) {
+            $this->_initialTypestyle = new PhpLatex_Renderer_Typestyle();
+        }
+        if (!$this->_typestyle) {
+            $this->_typestyle = $this->_initialTypestyle->push();
+        } else {
+            $this->_typestyle = $this->_typestyle->push();
+        }
+        return $this->_typestyle;
+    }
+
+    protected function _renderStyled(PhpLatex_Node $node)
+    {
+        if ($node->getType() !== PhpLatex_Parser::TYPE_COMMAND) {
+            return '';
+        }
+
+        $typestyle = null;
+
+        switch ($node->value) {
+            case '\\textbf':
+                $typestyle = $this->_pushTypestyle();
+                $typestyle->bold = true;
+                break;
+
+            case '\\textup':
+                $typestyle = $this->_pushTypestyle();
+                $typestyle->style = PhpLatex_Renderer_Typestyle::STYLE_NORMAL;
+                break;
+
+            case '\\textit':
+                $typestyle = $this->_pushTypestyle();
+                $typestyle->style = PhpLatex_Renderer_Typestyle::STYLE_ITALIC;
+                break;
+
+            case '\\textsl': // slanted (oblique)
+                $typestyle = $this->_pushTypestyle();
+                $typestyle->style = PhpLatex_Renderer_Typestyle::STYLE_SLANTED;
+                break;
+
+            case '\\emph':
+                $typestyle = $this->_pushTypestyle();
+                $typestyle->emphasis = true;
+                break;
+
+            case '\\textrm':
+                $typestyle = $this->_pushTypestyle();
+                $typestyle->family = PhpLatex_Renderer_Typestyle::FAMILY_SERIF;
+                break;
+
+            case '\\texttt':
+                $typestyle = $this->_pushTypestyle();
+                $typestyle->family = PhpLatex_Renderer_Typestyle::FAMILY_MONO;
+                break;
+
+            case '\\textsf':
+                $typestyle = $this->_pushTypestyle();
+                $typestyle->family = PhpLatex_Renderer_Typestyle::FAMILY_SANS;
+                break;
+
+            case '\\underline':
+                $typestyle = $this->_pushTypestyle();
+                $typestyle->underline = true;
+                break;
+
+            case '\\textsc': // small caps
+                $typestyle = $this->_pushTypestyle();
+                $typestyle->smallcaps = true;
+                break;
+        }
+
+        // all above commands are expected to have one child
+        $render = null;
+
+        foreach ($node->getChildren() as $arg) {
+            $render = $this->_renderNode($arg, self::FLAG_ARG);
+            break;
+        }
+
+        // wrap in style difference wrt to parent typestyle
+        if ($typestyle) {
+            if (strlen($render)) {
+                $diff = $typestyle->diff();
+                if ($diff) {
+                    $render = $this->_wrapStyle($render, $diff);
+                }
+            }
+            $this->_typestyle = $typestyle->pop();
+        }
+
+        return (string) $render;
+    }
+
+    protected function _wrapStyle($render, array $diff = null)
+    {
+        $tags = array();
+        $style = array();
+
+        if (isset($diff['family'])) {
+            switch ($diff['family']) {
+                case PhpLatex_Renderer_Typestyle::FAMILY_SANS:
+                    $style['font-family'] = 'sans-serif';
+                    break;
+
+                case PhpLatex_Renderer_Typestyle::FAMILY_MONO:
+                    $style['font-family'] = 'monospace';
+                    break;
+
+                case PhpLatex_Renderer_Typestyle::FAMILY_SERIF:
+                    $style['font-family'] = 'serif';
+                    break;
+            }
+        }
+
+        if (isset($diff['style'])) {
+            switch ($diff['style']) {
+                case PhpLatex_Renderer_Typestyle::STYLE_NORMAL:
+                    $style['font-style'] = 'normal';
+                    break;
+
+                case PhpLatex_Renderer_Typestyle::STYLE_SLANTED:
+                    $style['font-style'] = 'oblique';
+                    break;
+
+                case PhpLatex_Renderer_Typestyle::STYLE_ITALIC:
+                    $tags[] = 'i';
+                    break;
+            }
+        }
+
+        if (isset($diff['bold'])) {
+            if ($diff['bold']) {
+                $tags[] = 'b';
+            } else {
+                $style['font-weight'] = 'normal';
+            }
+        }
+
+        if (isset($diff['emphasis'])) {
+            if ($diff['emphasis']) {
+                $tags[] = 'em';
+            }
+        }
+
+        if (isset($diff['underline'])) {
+            if ($diff['underline']) {
+                $tags[] = 'u';
+            } else {
+                $style['text-decoration'] = 'none';
+            }
+        }
+
+        if (isset($diff['smallcaps'])) {
+            if ($diff['smallcaps']) {
+                $style['font-variant'] = 'small-caps';
+            } else {
+                $style['font-variant'] = 'normal';
+            }
+        }
+
+        if (!$tags && !$style) {
+            return $render;
+        }
+
+        if ($tags) {
+            $open = $close = '';
+            foreach ($tags as $tag) {
+                $open .= '<' . $tag . '>';
+                $close = $close . '</' . $tag . '>';
+            }
+            return $open . $render . $close;
+        }
+
+        $css = array();
+        foreach ($style as $key => $value) {
+            $css[] = $key . ':' . $value;
+        }
+        return sprintf('<span style="%s">%s</span>', implode(';', $css), $render);
     }
 
     public function render(PhpLatex_Node $document)

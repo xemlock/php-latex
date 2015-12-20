@@ -49,6 +49,11 @@ class PhpLatex_Lexer
         // echo '<pre>INTERNAL: ', (htmlspecialchars($str)), '</pre>';
         $this->_str = $str;
         $this->_pos = 0;
+
+        // skip initial whitespaces
+        if (preg_match('/^(\s+)/', $str, $match)) {
+            $this->_pos = strlen($match[1]);
+        }
     }
 
     public function current()

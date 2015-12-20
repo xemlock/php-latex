@@ -209,6 +209,10 @@ class PhpLatex_Parser
             'numArgs'      => 1,
             'mode'         => self::MODE_BOTH,
         ),
+        '\\textup' => array(
+            'numArgs'      => 1,
+            'mode'         => self::MODE_BOTH,
+        ),
         '\\emph' => array(
             'numArgs'      => 1,
             'mode'         => self::MODE_BOTH,
