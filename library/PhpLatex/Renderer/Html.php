@@ -535,70 +535,66 @@ class PhpLatex_Renderer_Html extends PhpLatex_Renderer_Abstract
 
     protected function _renderStyled(PhpLatex_Node $node)
     {
-        if ($node->getType() !== PhpLatex_Parser::TYPE_COMMAND) {
-            return '';
-        }
-
         $typestyle = null;
 
-        switch ($node->value) {
-            case '\\textbf':
-                $typestyle = $this->_pushTypestyle();
-                $typestyle->bold = true;
-                break;
+        if ($node->getType() === PhpLatex_Parser::TYPE_COMMAND) {
+            switch ($node->value) {
+                case '\\textbf':
+                    $typestyle = $this->_pushTypestyle();
+                    $typestyle->bold = true;
+                    break;
 
-            case '\\textup':
-                $typestyle = $this->_pushTypestyle();
-                $typestyle->style = PhpLatex_Renderer_Typestyle::STYLE_NORMAL;
-                break;
+                case '\\textup':
+                    $typestyle = $this->_pushTypestyle();
+                    $typestyle->style = PhpLatex_Renderer_Typestyle::STYLE_NORMAL;
+                    break;
 
-            case '\\textit':
-                $typestyle = $this->_pushTypestyle();
-                $typestyle->style = PhpLatex_Renderer_Typestyle::STYLE_ITALIC;
-                break;
+                case '\\textit':
+                    $typestyle = $this->_pushTypestyle();
+                    $typestyle->style = PhpLatex_Renderer_Typestyle::STYLE_ITALIC;
+                    break;
 
-            case '\\textsl': // slanted (oblique)
-                $typestyle = $this->_pushTypestyle();
-                $typestyle->style = PhpLatex_Renderer_Typestyle::STYLE_SLANTED;
-                break;
+                case '\\textsl': // slanted (oblique)
+                    $typestyle = $this->_pushTypestyle();
+                    $typestyle->style = PhpLatex_Renderer_Typestyle::STYLE_SLANTED;
+                    break;
 
-            case '\\emph':
-                $typestyle = $this->_pushTypestyle();
-                $typestyle->emphasis = true;
-                break;
+                case '\\emph':
+                    $typestyle = $this->_pushTypestyle();
+                    $typestyle->emphasis = true;
+                    break;
 
-            case '\\textrm':
-                $typestyle = $this->_pushTypestyle();
-                $typestyle->family = PhpLatex_Renderer_Typestyle::FAMILY_SERIF;
-                break;
+                case '\\textrm':
+                    $typestyle = $this->_pushTypestyle();
+                    $typestyle->family = PhpLatex_Renderer_Typestyle::FAMILY_SERIF;
+                    break;
 
-            case '\\texttt':
-                $typestyle = $this->_pushTypestyle();
-                $typestyle->family = PhpLatex_Renderer_Typestyle::FAMILY_MONO;
-                break;
+                case '\\texttt':
+                    $typestyle = $this->_pushTypestyle();
+                    $typestyle->family = PhpLatex_Renderer_Typestyle::FAMILY_MONO;
+                    break;
 
-            case '\\textsf':
-                $typestyle = $this->_pushTypestyle();
-                $typestyle->family = PhpLatex_Renderer_Typestyle::FAMILY_SANS;
-                break;
+                case '\\textsf':
+                    $typestyle = $this->_pushTypestyle();
+                    $typestyle->family = PhpLatex_Renderer_Typestyle::FAMILY_SANS;
+                    break;
 
-            case '\\underline':
-                $typestyle = $this->_pushTypestyle();
-                $typestyle->underline = true;
-                break;
+                case '\\underline':
+                    $typestyle = $this->_pushTypestyle();
+                    $typestyle->underline = true;
+                    break;
 
-            case '\\textsc': // small caps
-                $typestyle = $this->_pushTypestyle();
-                $typestyle->smallcaps = true;
-                break;
+                case '\\textsc': // small caps
+                    $typestyle = $this->_pushTypestyle();
+                    $typestyle->smallcaps = true;
+                    break;
+            }
         }
 
-        // all above commands are expected to have one child
         $render = null;
 
         foreach ($node->getChildren() as $arg) {
-            $render = $this->_renderNode($arg, self::FLAG_ARG);
-            break;
+            $render .= $this->_renderNode($arg, self::FLAG_ARG);
         }
 
         // wrap in style difference wrt to parent typestyle
