@@ -2,12 +2,23 @@
 
 class PhpLatex_PdfLatex
 {
+    const TEXMFHOME = 'TEXMFHOME';
+
+    /**
+     * @var string
+     */
     protected $_texmfhome;
 
-    protected $_buildPath;
+    /**
+     * @var string
+     */
+    protected $_buildDir;
 
     protected $_log;
 
+    /**
+     * @var string
+     */
     protected $_pdflatexBinary;
 
     public function getPdflatexBinary()
@@ -18,70 +29,94 @@ class PhpLatex_PdfLatex
         // Aborted
 
         // Solution: Use full path to the pdflatex binary
-
         if ($this->_pdflatexBinary === null) {
-            $pdflatex = 'pdflatex';
-            if (Zefram_Os::isWindows()) {
-                $pdflatex .= '.exe';
-            }
-            $this->_pdflatexBinary = Zefram_Os::pathLookup($pdflatex);
+            $this->_pdflatexBinary = $this->findPdflatexBinary();
         }
         return $this->_pdflatexBinary;
     }
 
-    public function setBuildPath($path)
+    public function setPdflatexBinary($path)
     {
-        if (!is_dir($path) || !is_writable($path)) {
-            throw new InvalidArgumentException('Path cannot be used as a build directory');
+        if (!file_exists($path)) {
+            throw new Exception('Pdflatex binary not found: ' . $path);
         }
-        $this->_buildPath = rtrim(realpath($path), '/') . '/';
+        if (!is_executable($path)) {
+            throw new Exception('Pdflatex binary is not executable: ' . $path);
+        }
+        $this->_pdflatexBinary = realpath($path);
         return $this;
     }
 
-    public function getBuildPath()
+    public function findPdflatexBinary()
     {
-        if (empty($this->_buildPath)) {
-            throw new Exception('BuildPath is not configured');
+        $file = 'pdflatex';
+        if (stripos(PHP_OS, 'Win') !== false) {
+            $file .= '.exe';
         }
-        return $this->_buildPath;
+
+        $path = getenv('PATH');
+        $dirs = explode(PATH_SEPARATOR, $path);
+        array_unshift($dirs, getcwd());
+
+        foreach ($dirs as $dir) {
+            $path = $dir . DIRECTORY_SEPARATOR . $file;
+            if (file_exists($path)) {
+                return $path;
+            }
+        }
+
+        throw new Exception('Unable to find pdflatex binary');
     }
 
-    public function compile($script, $module = null, array $vars = null, array $files = null)
+    public function setBuildDir($path)
+    {
+        if (!is_dir($path)) {
+            throw new InvalidArgumentException('Path is not a directory: ' . $path);
+        }
+        if (!is_writable($path)) {
+            throw new InvalidArgumentException('Path is not writable: ' . $path);
+        }
+        $this->_buildDir = rtrim(realpath($path), '/') . '/';
+        return $this;
+    }
+
+    public function getBuildDir()
+    {
+        if (empty($this->_buildDir)) {
+            $this->setBuildDir(sys_get_temp_dir());
+        }
+        return $this->_buildDir;
+    }
+
+    public function compile($script, array $files = null)
     {
         $conv = require dirname(__FILE__) . '/latex_utf8.php';
         $conv = array_flip($conv);
 
         $this->_log = null;
 
-        if (is_array($module)) {
-            $files = $vars;
-            $vars = $module;
-            $module = null;
-        }
+        $buildDir = $this->getBuildDir();
 
-        $buildPath = $this->getBuildPath();
-        $output = $this->_render($script, $module, $vars);
-
-        $output = strtr($output, $conv);
+        $output = strtr($script, $conv);
         $output = preg_replace('/[^\t\n\r\x20-\x7E]/', '', $output);
 
         $key = 'pdflatex/' . md5($output);
-        $basePath = $buildPath . $key . '/output';
+        $basePath = $buildDir . $key . '/output';
         $pdf = $basePath . '.pdf';
 
         if (is_file($pdf)) {
             return $pdf;
         }
 
-        if (!is_dir($buildPath . $key)) {
-            mkdir($buildPath . $key, 0777, true);
+        if (!is_dir($buildDir . $key)) {
+            mkdir($buildDir . $key, 0777, true);
         }
 
         foreach ((array) $files as $path) {
             // TODO handle Windows
-            if (!is_file($buildPath . $key . '/' . basename($path))) {
-                if (!@symlink($path, $buildPath . $key . '/' . basename($path))) {
-                    copy($path, $buildPath . $key . '/' . basename($path));
+            if (!is_file($buildDir . $key . '/' . basename($path))) {
+                if (!@symlink($path, $buildDir . $key . '/' . basename($path))) {
+                    copy($path, $buildDir . $key . '/' . basename($path));
                 }
             }
         }
@@ -90,11 +125,12 @@ class PhpLatex_PdfLatex
         file_put_contents($tex, $output);
 
         $cwd = getcwd();
-        chdir($buildPath . $key);
-
-        Zefram_Os::setEnv('TEXMFHOME', $this->_texmfhome);
+        chdir($buildDir . $key);
 
         $pdflatex =  $this->getPdflatexBinary();
+
+        $texmfhome = getenv(self::TEXMFHOME);
+        $this->_setEnv(self::TEXMFHOME, $this->_texmfhome);
 
         $cmd = "$pdflatex -interaction nonstopmode -halt-on-error -file-line-error $tex";
         $log = `$cmd`;
@@ -102,14 +138,15 @@ class PhpLatex_PdfLatex
 
         $log = str_replace(array("\r\n", "\r"), "\n", $log);
         $log = str_replace(array(
-            $buildPath . $key . '/',
-            wordwrap('(' . $buildPath . $key . '/', 79, "\n", true),
-            wordwrap($buildPath . $key . '/', 79, "\n", true),
+            $buildDir . $key . '/',
+            wordwrap('(' . $buildDir . $key . '/', 79, "\n", true),
+            wordwrap($buildDir . $key . '/', 79, "\n", true),
         ), array('', '('), $log);
 
         $this->_log = __CLASS__ . ' ' . $key . "\n\n" . $log;
 
         chdir($cwd);
+        $this->_setEnv(self::TEXMFHOME, $texmfhome);
 
         // if document body is empty a 0-length file is generated
         if (is_file($pdf) && filesize($pdf)) {
@@ -128,5 +165,12 @@ class PhpLatex_PdfLatex
     {
         $this->_texmfhome = (string) $texmfhome;
         return $this;
+    }
+
+    protected function _setEnv($key, $value)
+    {
+        // putenv/getenv and $_ENV are completely distinct environment stores
+        $_ENV[$key] = $value;
+        putenv("$key=$value");
     }
 }
