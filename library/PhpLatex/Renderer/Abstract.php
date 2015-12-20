@@ -1,7 +1,6 @@
 <?php
 
 abstract class PhpLatex_Renderer_Abstract
-    implements PhpLatex_Renderer_NodeRenderer
 {
     /**
      * Creates LaTeX representation of the given document node.
@@ -78,10 +77,10 @@ abstract class PhpLatex_Renderer_Abstract
     } // }}}
 
     /**
-     * @param PhpLatex_Node $node
+     * @param PhpLatex_Node|string $node
      * @return string
      */
-    abstract public function render(PhpLatex_Node $node);
+    abstract public function render($node);
 
     protected $_commandRenderers = array();
 

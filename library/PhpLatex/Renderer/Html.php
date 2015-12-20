@@ -20,6 +20,32 @@ class PhpLatex_Renderer_Html extends PhpLatex_Renderer_Abstract
      */
     protected $_typestyle;
 
+    /**
+     * @var PhpLatex_Parser
+     */
+    protected $_parser;
+
+    /**
+     * @param PhpLatex_Parser $parser
+     * @return PhpLatex_Renderer_Html
+     */
+    public function setParser(PhpLatex_Parser $parser)
+    {
+        $this->_parser = $parser;
+        return $this;
+    }
+
+    /**
+     * @return PhpLatex_Parser
+     */
+    public function getParser()
+    {
+        if ($this->_parser === null) {
+            $this->_parser = new PhpLatex_Parser();
+        }
+        return $this->_parser;
+    }
+
     protected function _renderItem($node, PhpLatex_Utils_PeekableIterator $it) // {{{
     {
         $html = '';
@@ -676,8 +702,16 @@ class PhpLatex_Renderer_Html extends PhpLatex_Renderer_Abstract
         return sprintf('<span style="%s">%s</span>', implode(';', $css), $render);
     }
 
-    public function render(PhpLatex_Node $document)
+    /**
+     * @param PhpLatex_Node|string $document
+     * @return mixed|string
+     */
+    public function render($document)
     {
+        if (!$document instanceof PhpLatex_Node) {
+            $document = $this->getParser()->parse($document);
+        }
+
         $this->_par = array();
         $result = '';
 
