@@ -53,228 +53,19 @@ class PhpLatex_Parser
      *
      * @var array
      */
-    protected $_environs = array(
-        'verbatim'    => array(
-            'verbatim'  => true,
-            'mode'      => self::MODE_TEXT,
-            'environs'  => array('itemize', 'enumerate'),
-            'starred'   => true,
-            // verbatim in tabular causes (sic!)
-            // ! LaTeX Error: Something's wrong--perhaps a missing \item.
-        ),
-        'Verbatim'    => array(
-            'verbatim'  => true,
-            'mode'      => self::MODE_TEXT,
-            'environs'  => array('itemize', 'enumerate'),
-        ),
-        'lstlisting'  => array(
-            'verbatim'  => true,
-            'mode'      => self::MODE_TEXT,
-            'environs'  => array('itemize', 'enumerate'),
-        ),
-        'enumerate'   => array(
-            'mode'      => self::MODE_TEXT,
-            'environs'  => array('itemize', 'enumerate'),
-        ),
-        'itemize'     => array(
-            'mode'      => self::MODE_TEXT,
-            'environs'  => array('itemize', 'enumerate'),
-            // itemize in tabular causes
-            // ! LaTeX Error: Something's wrong--perhaps a missing \item.
-        ),
-        'displaymath' => array(
-            'math'      => true,
-            'mode'      => self::MODE_TEXT,
-            'environs'  => array('itemize', 'enumerate'),
-            // displaymath in tabular causes
-            // ! LaTeX Error: Bad math environment delimiter.
-        ),
-        'math'        => array(
-            'math'      => true,
-            'mode'      => self::MODE_TEXT,
-            'environs'  => array('itemize', 'enumerate', 'tabular'),
-        ),
-        'equation' => array(
-            'mode'      => self::MODE_TEXT,
-            'math'      => true,
-            'starred'   => true,
-        ),
-        'eqnarray' => array(
-            'mode'      => self::MODE_TEXT,
-            'math'      => true,
-            'starred'   => true,
-        ),
-        'tabular'     => array(
-            'numArgs'     => 1,
-            'mode'      => self::MODE_TEXT,
-            'environs'  => array('itemize', 'enumerate', 'tabular'),
-        ),
-    );
-
-    // environs - required environments
-    protected $_commands = array( // {{{
-        '\\par' => array(
-            'numArgs'     => 0,
-            'mode'      => self::MODE_TEXT,
-        ),
-        '\\string' => array( // TeX primitive
-            'numArgs' => 1,
-            'parseArgs' => false,
-            'mode' => self::MODE_BOTH,
-        ),
-        '\\newline' => array(
-            'numArgs'     => 0,
-            'mode'      => self::MODE_BOTH,
-        ),
-        '\\\\' => array(
-            'numArgs'     => 0,
-            'mode'      => self::MODE_BOTH,
-        ),
-        '\\TeX' => array(
-            'numArgs'     => 0,
-            'mode'      => self::MODE_BOTH,
-        ),
-        '\\LaTeX' => array(
-            'numArgs'     => 0,
-            'mode'      => self::MODE_BOTH,
-        ),
-        '\\chapter' => array(
-            'numArgs'     => 1,
-            'mode'      => self::MODE_TEXT,
-            'starred'   => true,
-            'counter' => 'chapter',
-            'counterReset' => array(
-                'section', 'subsection', 'subsubsection', 'paragraph', 'subparagraph',
-            ),
-        ),
-        '\\section' => array(
-            'numArgs'      => 1,
-            'mode'         => self::MODE_TEXT,
-            'starred'      => true,
-            'counter'      => 'section',
-            'counterReset' => array(
-                'subsection', 'subsubsection', 'paragraph', 'subparagraph',
-            ),
-        ),
-        '\\subsection' => array(
-            'numArgs'     => 1,
-            'mode'         => self::MODE_TEXT,
-            'starred'      => true,
-            'counter'      => 'subsection',
-            'counterReset' => array(
-                'subsubsection', 'paragraph', 'subparagraph',
-            ),
-        ),
-        '\\subsubsection' => array(
-            'numArgs'      => 1,
-            'mode'         => self::MODE_TEXT,
-            'starred'      => true,
-            'counter'      => 'subsubsection',
-            'counterReset' => array(
-                'paragraph', 'subparagraph',
-            ),
-        ),
-        '\\paragraph' => array(
-            'numArgs'      => 1,
-            'mode'         => self::MODE_TEXT,
-            'starred'      => true,
-            'counter'      => 'paragraph',
-            'counterReset' => array(
-                'subparagraph',
-            ),
-        ),
-        '\\subparagraph' => array(
-            'numArgs'      => 1,
-            'mode'         => self::MODE_TEXT,
-            'starred'      => true,
-            'counter'      => 'subparagraph',
-        ),
-        '\\textbf' => array(
-            'numArgs'      => 1,
-            'mode'         => self::MODE_BOTH,
-        ),
-        '\\textit' => array(
-            'numArgs'      => 1,
-            'mode'         => self::MODE_BOTH,
-        ),
-        '\\textrm' => array(
-            'numArgs'      => 1,
-            'mode'         => self::MODE_BOTH,
-        ),
-        '\\texttt' => array(
-            'numArgs'      => 1,
-            'mode'         => self::MODE_BOTH,
-        ),
-        '\\textsf' => array(
-            'numArgs'      => 1,
-            'mode'         => self::MODE_BOTH,
-        ),
-        '\\textup' => array(
-            'numArgs'      => 1,
-            'mode'         => self::MODE_BOTH,
-        ),
-        '\\emph' => array(
-            'numArgs'      => 1,
-            'mode'         => self::MODE_BOTH,
-        ),
-        '\\textsubscript' => array( // \usepackage{fixltx2e}
-            'numArgs'      => 1,
-            'mode'         => self::MODE_BOTH,
-        ),
-        '\\textsuperscript' => array(
-            'numArgs'      => 1,
-            'mode'         => self::MODE_BOTH,
-        ),
-        '\\url' => array( // \usepackage{hyperref}
-            'numArgs'      => 1,
-            'mode'         => self::MODE_TEXT,
-        ),
-        '\\href' => array( // \usepackage{hyperref}
-            'numArgs'      => 2,
-            'mode'         => self::MODE_TEXT,
-        ),
-        '\\label' => array(
-            'numArgs'      => 1,
-            'mode'         => self::MODE_BOTH,
-        ),
-        '\\ref' => array(
-            'numArgs'      => 1,
-            'mode'         => self::MODE_BOTH,
-        ),
-        '\\item' => array(
-            'mode'         => self::MODE_TEXT,
-            'environs'     => array('itemize', 'enumerate'),
-        ),
-        '\\^' => array(
-            'numArgs'      => 1,
-            'mode'         => self::MODE_TEXT,
-        ),
-        '\\~' => array(
-            'numArgs'      => 1,
-            'mode'         => self::MODE_TEXT,
-        ),
-        '\\hat' => array(
-            'numArgs'      => 1,
-            'mode'         => self::MODE_MATH,
-        ),
-        '\\sim' => array(
-            'mode'         => self::MODE_MATH,
-        ),
-        '\\frac' => array(
-            'numArgs'      => 2,
-            'mode'         => self::MODE_MATH,
-        ),
-        '\\sqrt' => array(
-            'numArgs'      => 1,
-            'numOptArgs'   => 1,
-            'mode'         => self::MODE_MATH,
-        ),
-    ); // }}}
+    protected $_environs = array();
+    protected $_commands = array();
 
     protected $_skipUndefinedCommands = false;
     protected $_skipUndefinedEnvirons = false;
 
     protected $refs = array();
+
+    public function __construct()
+    {
+        $this->_commands = require dirname(__FILE__) . '/commands.php';
+        $this->_environs = require dirname(__FILE__) . '/environs.php';
+    }
 
     public function addCommand($name, array $options) // {{{
     {
@@ -324,6 +115,7 @@ class PhpLatex_Parser
     public function _readVerbatim($match)
     {
         do {
+            // TODO
             $id = Zefram_Math_Rand::getString(8, Zefram_Math_Rand::ALPHA);
         } while (isset($this->_verbatims[$id]));
         $this->_verbatims[$id] = array(
@@ -402,19 +194,17 @@ class PhpLatex_Parser
                 continue;
             }
 
-            // prepare verbatim name for insertion into a regex
-            $name = str_replace(
-                array('\\', '.', '^', '$', '*', '+', '?', '(', ')', '[', '{', '|'),
-                array('\\\\', '\\.', '\\^', '\\$', '\\*', '\\+', '\\?', '\\(', '\\)', '\\[', '\\{', '\\|'),
-                $name
-            );
+            // prepare name for regex
+            $name = preg_quote($name, '/');
 
+            // if environment has starred version, add match for optional star
             if (isset($spec['starred']) && $spec['starred']) {
                 $name .= '\\*?';
             }
 
             // negative lookbehind to make sure \begin is not escaped
             $rx = '/(?<!\\\\)\\\\begin\s*\{(?P<name>' . $name . ')\}(?P<content>(.|\s)*?)\\\\end\s*\{\1\}/';
+
             $str = preg_replace_callback($rx, array($this, '_readVerbatim'), $str);
         }
 
@@ -1117,6 +907,7 @@ class PhpLatex_Parser
                 }
                 break;
 
+            /** @noinspection PhpMissingBreakStatementInspection */
             case '&': // TODO may occur only in table
                 if (empty($environ)) {
                     // not in environment, escape it
