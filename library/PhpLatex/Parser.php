@@ -113,11 +113,21 @@ class PhpLatex_Parser
         return $this;
     } // }}}
 
+    protected function _getRandomString($length)
+    {
+        $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $max = strlen($chars) - 1;
+        $string = '';
+        while (strlen($string) < $length) {
+            $string .= substr($chars, mt_rand(0, $max), 1);
+        }
+        return $string;
+    }
+
     public function _readVerbatim($match)
     {
         do {
-            // TODO
-            $id = Zefram_Math_Rand::getString(8, Zefram_Math_Rand::ALPHA);
+            $id = $this->_getRandomString(8);
         } while (isset($this->_verbatims[$id]));
         $this->_verbatims[$id] = array(
             'name' => $match['name'],
