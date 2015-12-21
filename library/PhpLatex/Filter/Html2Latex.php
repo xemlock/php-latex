@@ -487,11 +487,12 @@ class PhpLatex_Filter_Html2Latex
                         break;
 
                     case 'SUB':
-                        $par->addText('$_{\\text{' . self::getText($item, $cflags | self::NO_PARAGRAPH) . '}}$');
+                        // requires \usepackage{fixltx2e} for releases prior to 2015/01/01
+                        $par->addText('\\textsubscript{' . self::getText($item, $cflags | self::NO_PARAGRAPH) . '}');
                         break;
 
                     case 'SUP':
-                        $par->addText('$^{\\text{' . self::getText($item, $cflags | self::NO_PARAGRAPH) . '}}$');
+                        $par->addText('\\textsuperscript{' . self::getText($item, $cflags | self::NO_PARAGRAPH) . '}');
                         break;
 
                     default:
