@@ -529,6 +529,17 @@ class PhpLatex_Filter_Html2Latex
     {
         $value = str_replace(array("\r\n", "\r"), "\n", $node->wholeText);
         $value = PhpLatex_Utils::escape($value);
+        // replace UTF-8 characters with their counterparts
+        $value = self::escapeUtf8($value);
         return $value;
+    }
+
+    public static function escapeUtf8($value)
+    {
+        static $map;
+        if (null === $map) {
+            $map = array_flip(require dirname(__FILE__) . '/../latex_utf8.php');
+        }
+        return strtr($value, $map);
     }
 }
