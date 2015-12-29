@@ -90,17 +90,11 @@ class PhpLatex_PdfLatex
 
     public function compile($script, array $files = null)
     {
-        $conv = require dirname(__FILE__) . '/latex_utf8.php';
-        $conv = array_flip($conv);
-
         $this->_log = null;
 
         $buildDir = $this->getBuildDir();
 
-        $output = strtr($script, $conv);
-        $output = preg_replace('/[^\t\n\r\x20-\x7E]/', '', $output);
-
-        $key = 'pdflatex/' . md5($output);
+        $key = 'pdflatex/' . md5($script);
         $basePath = $buildDir . $key . '/output';
         $pdf = $basePath . '.pdf';
 
@@ -122,7 +116,7 @@ class PhpLatex_PdfLatex
         }
 
         $tex = $basePath . '.tex';
-        file_put_contents($tex, $output);
+        file_put_contents($tex, $script);
 
         $cwd = getcwd();
         chdir($buildDir . $key);
@@ -136,6 +130,7 @@ class PhpLatex_PdfLatex
         $log = `$cmd`;
         `$cmd 2>&1`;
 
+        // process log so that paths are not given away
         $log = str_replace(array("\r\n", "\r"), "\n", $log);
         $log = str_replace(array(
             $buildDir . $key . '/',
