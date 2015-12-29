@@ -293,7 +293,22 @@ return array(
 // ["Ý","Y with acute"],["ý","y with acute"],["Ỳ","Y with grave"],["ỳ","y with grave"],["Ŷ","Y with circumflex"],["ŷ","y with circumflex"],["Y̊","Y with ring above"],["ẙ","y with ring above"],["Ÿ","Y with diaeresis"],["ÿ","y with diaeresis"],["Ỹ","Y with tilde"],["ỹ","y with tilde"],["Ẏ","Y with dot above"],["ẏ","y with dot above"],["Ȳ","Y with macron"],["ȳ","y with macron"],["Ỷ","Y with hook above"],["ỷ","y with hook above"],["Ỵ","Y with dot below"],["ỵ","y with dot below"],["Ɏ","Y with stroke"],["ɏ","y with stroke"],["Ƴ","Y with hook"],["ƴ","y with hook"],["Ỿ","Y with loop"],["ỿ","y with loop"],
 
     // Z
-// ["Ź","Z with acute"],["ź","z with acute"],["Ẑ","Z with circumflex"],["ẑ","z with circumflex"],["Ž","Z with caron"],["ž","z with caron"],["Ż","Z with dot above"],["ż","z with dot above"],["Ẓ","Z with dot below"],["ẓ","z with dot below"],["Ẕ","Z with line below"],["ẕ","z with line below"],["Ƶ","Z with stroke"],["ƶ","z with stroke"],["ᵶ","Z with middle tilde"],["ᶎ","Z with palatal hook"],["Ȥ","Z with hook"],["ȥ","z with hook"],["ʐ","Z with retroflex hook"],["ʑ","Z with curl"],["Ɀ","Z with swash tail"],["ɀ","z with swash tail"],["Ⱬ","Z with descender"],["ⱬ","z with descender"],["Ǯ","Ezh with caron"],["ǯ","ezh with caron"],["ᶚ","Ezh with retroflex hook"],["ƺ","Ezh with tail"],["ʓ","Ezh with curl"],
+    "\'{Z}" => 'Ź', // Z with acute
+    "\'{z}" => 'ź', // z with acute
+
+    '\^{Z}' => 'Ẑ', // Z with circumflex
+    '\^{z}' => 'ẑ', // z with circumflex
+
+    '\v{Z}' => 'Ž', // Z with caron
+    '\v{z}' => 'ž', // z with caron
+
+    '\.{Z}' => 'Ż', // Z with dot above
+    '\.{z}' => 'ż', // z with dot above
+
+    '\d{Z}' => 'Ẓ', // Z with dot below
+    '\d{z}' => 'ẓ', // z with dot below
+
+    // ["Ẕ","Z with line below"],["ẕ","z with line below"],["Ƶ","Z with stroke"],["ƶ","z with stroke"],["ᵶ","Z with middle tilde"],["ᶎ","Z with palatal hook"],["Ȥ","Z with hook"],["ȥ","z with hook"],["ʐ","Z with retroflex hook"],["ʑ","Z with curl"],["Ɀ","Z with swash tail"],["ɀ","z with swash tail"],["Ⱬ","Z with descender"],["ⱬ","z with descender"],["Ǯ","Ezh with caron"],["ǯ","ezh with caron"],["ᶚ","Ezh with retroflex hook"],["ƺ","Ezh with tail"],["ʓ","Ezh with curl"],
 
     '\`{o}' => 'ò',  // grave
     "\'{o}" => 'ó', // acute
