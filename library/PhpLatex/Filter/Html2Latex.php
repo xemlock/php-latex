@@ -115,6 +115,17 @@ class PhpLatex_Filter_ParagraphList implements Countable, IteratorAggregate
 
 class PhpLatex_Filter_Html2Latex
 {
+    protected static $_outputEncoding = 'ANSI';
+
+    /**
+     * Set output encoding
+     * @param $encoding
+     */
+    public static function setOutputEncoding($encoding)
+    {
+        self::$_outputEncoding = strtoupper($encoding);
+    }
+
     /**
      * @param  string $html
      * @param  array $options OPTIONAL
@@ -149,7 +160,7 @@ class PhpLatex_Filter_Html2Latex
         if ($body) {
             $elems = array($body);
             $refs = array();
-            $filter = new Zefram_Filter_Slug();
+            $filter = new Zefram_Filter_Slug(); // FIXME dependency!
             // extract all referenced ids of elements, they will be used for internal links creation
             while ($elem = array_shift($elems)) {
                 foreach ($elem->childNodes as $item) {
@@ -530,16 +541,9 @@ class PhpLatex_Filter_Html2Latex
         $value = str_replace(array("\r\n", "\r"), "\n", $node->wholeText);
         $value = PhpLatex_Utils::escape($value);
         // replace UTF-8 characters with their counterparts
-        $value = self::escapeUtf8($value);
-        return $value;
-    }
-
-    public static function escapeUtf8($value)
-    {
-        static $map;
-        if (null === $map) {
-            $map = array_flip(require dirname(__FILE__) . '/../latex_utf8.php');
+        if (!in_array(self::$_outputEncoding, array('UTF-8', 'UTF8'), true)) {
+            $value = PhpLatex_Utils::escapeUtf8($value);
         }
-        return strtr($value, $map);
+        return $value;
     }
 }
