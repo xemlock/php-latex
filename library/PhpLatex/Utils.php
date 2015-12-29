@@ -37,7 +37,7 @@ class PhpLatex_Utils
     {
         static $map;
         if (null === $map) {
-            $map = array_flip(require dirname(__FILE__) . '/../latex_utf8.php');
+            $map = array_flip(require dirname(__FILE__) . '/latex_utf8.php');
         }
         $string = strtr($string, $map);
         $string = preg_replace('/[^\t\n\r\x20-\x7E]/', '', $string);

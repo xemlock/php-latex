@@ -540,8 +540,24 @@ class PhpLatex_Filter_Html2Latex
     {
         $value = str_replace(array("\r\n", "\r"), "\n", $node->wholeText);
         $value = PhpLatex_Utils::escape($value);
-        // replace UTF-8 characters with their counterparts
-        if (!in_array(self::$_outputEncoding, array('UTF-8', 'UTF8'), true)) {
+
+        // replace UTF-8 characters with their counterparts if encoding is not UTF-8,
+        // otherwise remove invalid UTF-8 characters
+        if (in_array(self::$_outputEncoding, array('UTF-8', 'UTF8'), true)) {
+            // regex taken from http://stackoverflow.com/questions/1401317/remove-non-utf8-characters-from-string
+            $regex = '
+            /
+              (
+                (?: [\x00-\x7F]                 # single-byte sequences   0xxxxxxx
+                |   [\xC0-\xDF][\x80-\xBF]      # double-byte sequences   110xxxxx 10xxxxxx
+                |   [\xE0-\xEF][\x80-\xBF]{2}   # triple-byte sequences   1110xxxx 10xxxxxx * 2
+                |   [\xF0-\xF7][\x80-\xBF]{3}   # quadruple-byte sequence 11110xxx 10xxxxxx * 3
+                ){1,100}                        # ...one or more times
+              )
+            | .                                 # anything else
+            /x';
+            $value = preg_replace($regex, '$1', $value);
+        } else {
             $value = PhpLatex_Utils::escapeUtf8($value);
         }
         return $value;

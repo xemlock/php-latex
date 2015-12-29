@@ -1,5 +1,6 @@
 <?php
 
+// TODO add options, such as changing PDF version in xelatex -output-driver="xdvipdfmx -V4"
 class PhpLatex_PdfLatex
 {
     const TEXMFHOME = 'TEXMFHOME';
@@ -49,19 +50,22 @@ class PhpLatex_PdfLatex
 
     public function findPdflatexBinary()
     {
-        $file = 'pdflatex';
-        if (stripos(PHP_OS, 'Win') !== false) {
-            $file .= '.exe';
-        }
+        $files = array('pdflatex'); // xelatex perhaps?
 
-        $path = getenv('PATH');
-        $dirs = explode(PATH_SEPARATOR, $path);
-        array_unshift($dirs, getcwd());
+        foreach ($files as $file) {
+            if (stripos(PHP_OS, 'Win') !== false) {
+                $file .= '.exe';
+            }
 
-        foreach ($dirs as $dir) {
-            $path = $dir . DIRECTORY_SEPARATOR . $file;
-            if (file_exists($path)) {
-                return $path;
+            $path = getenv('PATH');
+            $dirs = explode(PATH_SEPARATOR, $path);
+            array_unshift($dirs, getcwd());
+
+            foreach ($dirs as $dir) {
+                $path = $dir . DIRECTORY_SEPARATOR . $file;
+                if (file_exists($path)) {
+                    return $path;
+                }
             }
         }
 
