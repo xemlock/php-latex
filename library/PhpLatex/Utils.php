@@ -23,6 +23,7 @@ class PhpLatex_Utils
             '[' => '{[}',
             ']' => '{]}',
         );
+        $string = (string) $string;
         return strtr($string, $replace);
     }
 
@@ -39,6 +40,7 @@ class PhpLatex_Utils
         if (null === $map) {
             $map = array_flip(require dirname(__FILE__) . '/latex_utf8.php');
         }
+        $string = (string) $string;
         $string = strtr($string, $map);
         $string = preg_replace('/[^\t\n\r\x20-\x7E]/', '', $string);
         return $string;
