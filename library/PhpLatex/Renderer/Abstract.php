@@ -87,7 +87,10 @@ abstract class PhpLatex_Renderer_Abstract
     public function addCommandRenderer($command, $renderer)
     {
         if (!is_callable($renderer) && !$renderer instanceof PhpLatex_Renderer_NodeRenderer) {
-            throw new InvalidArgumentException('Renderer is not a callable');
+            throw new InvalidArgumentException(sprintf(
+                'Renderer must be an instance of PhpLatex_Renderer_NodeRenderer or a callable, %s given',
+                is_object($renderer) ? get_class($renderer) : gettype($renderer)
+            ));
         }
         $this->_commandRenderers[$command] = $renderer;
         return $this;
