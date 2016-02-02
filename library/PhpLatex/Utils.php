@@ -38,7 +38,7 @@ class PhpLatex_Utils
     {
         static $map;
         if (null === $map) {
-            $map = array_flip(require dirname(__FILE__) . '/latex_utf8.php');
+            $map = require dirname(__FILE__) . '/latex_utf8.php';
         }
         $string = (string) $string;
         $string = strtr($string, $map);
