@@ -92,15 +92,63 @@ class PhpLatex_PdfLatex
         return $this->_buildDir;
     }
 
-    public function compile($script, array $files = null)
+    public function compile($file, array $files = null)
     {
         $this->_log = null;
 
+        $cwd = getcwd();
+        $dir = dirname($file);
+
+        foreach ((array) $files as $path) {
+            // TODO handle Windows
+            if (!is_file($dir . '/' . basename($path))) {
+                if (!@symlink($path, $dir . '/' . basename($path))) {
+                    copy($path, $dir . '/' . basename($path));
+                }
+            }
+        }
+
+        chdir($dir);
+
+        $pdflatex = $this->getPdflatexBinary();
+
+        $texmfhome = getenv(self::TEXMFHOME);
+        $this->_setEnv(self::TEXMFHOME, $this->_texmfhome);
+
+        $cmd = "$pdflatex -interaction nonstopmode -halt-on-error -file-line-error $file";
+        $log = `$cmd`;
+        `$cmd 2>&1`;
+
+        // process log so that paths are not given away
+        $log = str_replace(array("\r\n", "\r"), "\n", $log);
+        $log = str_replace(array(
+            $dir . '/',
+            wordwrap('(' . $dir . '/', 79, "\n", true),
+            wordwrap($dir . '/', 79, "\n", true),
+        ), array('', '('), $log);
+
+        $this->_log = __CLASS__ . ' ' . $file . "\n\n" . $log;
+
+        chdir($cwd);
+        $this->_setEnv(self::TEXMFHOME, $texmfhome);
+
+        $output = sprintf('%s/%s.pdf', $dir, basename($file, '.tex'));
+
+        // if document body is empty a 0-length file is generated
+        if (is_file($output) && filesize($output)) {
+            return $output;
+        }
+
+        throw new Exception(sprintf('Unable to compile file \'%s\'', $file));
+    }
+
+    public function compileString($script, array $files = null)
+    {
         $buildDir = $this->getBuildDir();
 
         $key = 'pdflatex/' . md5($script);
         $basePath = $buildDir . $key . '/output';
-        $pdf = $basePath . '.pdf';
+        $pdf = $basePath . '/output.pdf';
 
         if (is_file($pdf)) {
             return $pdf;
@@ -110,49 +158,10 @@ class PhpLatex_PdfLatex
             mkdir($buildDir . $key, 0777, true);
         }
 
-        foreach ((array) $files as $path) {
-            // TODO handle Windows
-            if (!is_file($buildDir . $key . '/' . basename($path))) {
-                if (!@symlink($path, $buildDir . $key . '/' . basename($path))) {
-                    copy($path, $buildDir . $key . '/' . basename($path));
-                }
-            }
-        }
-
         $tex = $basePath . '.tex';
         file_put_contents($tex, $script);
 
-        $cwd = getcwd();
-        chdir($buildDir . $key);
-
-        $pdflatex =  $this->getPdflatexBinary();
-
-        $texmfhome = getenv(self::TEXMFHOME);
-        $this->_setEnv(self::TEXMFHOME, $this->_texmfhome);
-
-        $cmd = "$pdflatex -interaction nonstopmode -halt-on-error -file-line-error $tex";
-        $log = `$cmd`;
-        `$cmd 2>&1`;
-
-        // process log so that paths are not given away
-        $log = str_replace(array("\r\n", "\r"), "\n", $log);
-        $log = str_replace(array(
-            $buildDir . $key . '/',
-            wordwrap('(' . $buildDir . $key . '/', 79, "\n", true),
-            wordwrap($buildDir . $key . '/', 79, "\n", true),
-        ), array('', '('), $log);
-
-        $this->_log = __CLASS__ . ' ' . $key . "\n\n" . $log;
-
-        chdir($cwd);
-        $this->_setEnv(self::TEXMFHOME, $texmfhome);
-
-        // if document body is empty a 0-length file is generated
-        if (is_file($pdf) && filesize($pdf)) {
-            return $pdf;
-        }
-
-        throw new Exception('Unable to compile file');
+        return $this->compile($tex, $files);
     }
 
     public function getLog()
