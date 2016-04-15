@@ -152,7 +152,7 @@ class PhpLatex_PdfLatex
             return $pdf;
         }
 
-        return false;
+        throw new Exception('Unable to compile file');
     }
 
     public function getLog()
