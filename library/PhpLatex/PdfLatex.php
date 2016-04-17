@@ -50,16 +50,16 @@ class PhpLatex_PdfLatex
 
     public function findPdflatexBinary()
     {
-        $files = array('pdflatex'); // xelatex perhaps?
+        $files = array('pdflatex');
+
+        $path = getenv('PATH');
+        $dirs = explode(PATH_SEPARATOR, $path);
+        array_unshift($dirs, getcwd());
 
         foreach ($files as $file) {
             if (stripos(PHP_OS, 'Win') !== false) {
                 $file .= '.exe';
             }
-
-            $path = getenv('PATH');
-            $dirs = explode(PATH_SEPARATOR, $path);
-            array_unshift($dirs, getcwd());
 
             foreach ($dirs as $dir) {
                 $path = $dir . DIRECTORY_SEPARATOR . $file;
@@ -69,7 +69,7 @@ class PhpLatex_PdfLatex
             }
         }
 
-        throw new Exception('Unable to find pdflatex binary');
+        throw new Exception('Unable to locate pdflatex binary');
     }
 
     public function setBuildDir($path)
@@ -108,16 +108,18 @@ class PhpLatex_PdfLatex
             }
         }
 
-        chdir($dir);
-
         $pdflatex = $this->getPdflatexBinary();
 
         $texmfhome = getenv(self::TEXMFHOME);
         $this->_setEnv(self::TEXMFHOME, $this->_texmfhome);
 
+        chdir($dir);
         $cmd = "$pdflatex -interaction nonstopmode -halt-on-error -file-line-error $file";
         $log = `$cmd`;
         `$cmd 2>&1`;
+        chdir($cwd);
+
+        $this->_setEnv(self::TEXMFHOME, $texmfhome);
 
         // process log so that paths are not given away
         $log = str_replace(array("\r\n", "\r"), "\n", $log);
@@ -129,9 +131,6 @@ class PhpLatex_PdfLatex
 
         $this->_log = __CLASS__ . ' ' . $file . "\n\n" . $log;
 
-        chdir($cwd);
-        $this->_setEnv(self::TEXMFHOME, $texmfhome);
-
         $output = sprintf('%s/%s.pdf', $dir, basename($file, '.tex'));
 
         // if document body is empty a 0-length file is generated
@@ -142,26 +141,43 @@ class PhpLatex_PdfLatex
         throw new Exception(sprintf('Unable to compile file \'%s\'', $file));
     }
 
+    /**
+     * Compile string to a PDF document
+     *
+     * @param $script String containing LaTeX document source
+     * @param array $files
+     * @return string Path to compiled PDF document
+     * @throws Exception
+     */
     public function compileString($script, array $files = null)
     {
-        $buildDir = $this->getBuildDir();
+        $buildDir = $this->getBuildDir() . 'pdflatex/' . md5($script);
+        $output = $buildDir . '/output.pdf';
 
-        $key = 'pdflatex/' . md5($script);
-        $basePath = $buildDir . $key . '/output';
-        $pdf = $basePath . '/output.pdf';
-
-        if (is_file($pdf)) {
-            return $pdf;
+        if (is_file($output)) {
+            return $output;
         }
 
-        if (!is_dir($buildDir . $key)) {
-            mkdir($buildDir . $key, 0777, true);
+        if (!is_dir($buildDir)) {
+            if (!@mkdir($buildDir, 0777, true)) {
+                throw new Exception(sprintf(
+                    'Unable to create script build directory: %s',
+                    $buildDir
+                ));
+            }
         }
 
-        $tex = $basePath . '.tex';
-        file_put_contents($tex, $script);
+        if (!is_writable($buildDir)) {
+            throw new Exception(sprintf(
+                'Script build directory is not writable: %s',
+                $buildDir
+            ));
+        }
 
-        return $this->compile($tex, $files);
+        $scriptFile = $buildDir . '/output.tex';
+        file_put_contents($scriptFile, $script);
+
+        return $this->compile($scriptFile, $files);
     }
 
     public function getLog()
