@@ -1474,4 +1474,27 @@ return array (
 
     'Ƕ' => 'Hv',
     'ƕ' => 'hv',
+
+    // spaces
+    ' ' => '--', // OGHAM SPACE MARK
+    ' ' => ' ', // EN SPACE
+    ' ' => ' ', // EM SPACE
+    ' ' => ' ', // THREE-PER-EM SPACE
+    ' ' => ' ', // FOUR-PER-EM SPACE
+    ' ' => ' ', // SIX-PER-EM SPACE
+    ' ' => ' ', // FIGURE SPACE
+    ' ' => ' ', // PUNCTUATION SPACE
+    ' ' => ' ', // THIN SPACE
+    '　' => ' ', // IDEOGRAPHIC SPACE
+    ' ' => ' ', // NO-BREAK SPACE
+    ' ' => ' ', // HAIR SPACE
+    "\xE2\x80\x8B" => '', // ZERO WIDTH SPACE
+    ' ' => ' ', // NARROW NO-BREAK SPACE
+    "\xE2\x80\xAF" => ' ', // NARROW NO-BREAK SPACE
+    ' ' => ' ', // MEDIUM MATHEMATICAL SPACE
+    "\xE2\x81\x9F" => ' ', // MEDIUM MATHEMATICAL SPACE
+    "\xE1\xA0\x8E" => '', // MONGOLIAN VOWEL SEPARATOR
+    "\xE2\x80\x80" => ' ', // EN QUAD
+    "\xE2\x80\x81" => ' ', // EM QUAD
+    "\xEF\xBB\xBF" => '', // ZERO WIDTH NO-BREAK SPACE (BOM)
 );
