@@ -56,14 +56,17 @@ class PhpLatex_PdfLatex
         $dirs = explode(PATH_SEPARATOR, $path);
         array_unshift($dirs, getcwd());
 
+        // WIN32 WINNT Windows CYGWIN_NT-5.1
+        $isWindows = stripos(PHP_OS, 'WIN') === 0 || stripos(PHP_OS, 'CYGWIN') === 0;
+
         foreach ($files as $file) {
-            if (stripos(PHP_OS, 'Win') !== false) {
+            if ($isWindows) {
                 $file .= '.exe';
             }
 
             foreach ($dirs as $dir) {
                 $path = $dir . DIRECTORY_SEPARATOR . $file;
-                if (file_exists($path)) {
+                if (file_exists($path) && is_executable($path)) {
                     return $path;
                 }
             }
