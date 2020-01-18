@@ -1,3 +1,9 @@
+composer.lock
 /vendor/
+
+.DS_Store
+[Dd]esktop.ini
+
 *.swp
 *.swo
+.idea
