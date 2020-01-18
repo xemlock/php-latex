@@ -26,6 +26,9 @@ class PhpLatex_Lexer
 
     public function setString($str)
     {
+        // skip leading and trailing whitespaces
+        $str = trim($str);
+
         // perform initial transformations to mimic how TeX handles whitespaces.
         // Because of this transformations verbatim environments must be handled
         // elsewhere (i.e., replaced with placeholders before passing the input
@@ -49,11 +52,6 @@ class PhpLatex_Lexer
         // echo '<pre>INTERNAL: ', (htmlspecialchars($str)), '</pre>';
         $this->_str = $str;
         $this->_pos = 0;
-
-        // skip initial whitespaces
-        if (preg_match('/^(\s+)/', $str, $match)) {
-            $this->_pos = strlen($match[1]);
-        }
     }
 
     public function current()
