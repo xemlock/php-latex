@@ -70,13 +70,15 @@ class PhpLatex_Lexer
         $p = null; // previous char
 
         while ($this->_pos < $n + 1) {
-            $c = substr($this->_str, $this->_pos++, 1);
+            $c = substr($this->_str, $this->_pos, 1);
+            $this->_pos++;
 
-            if ($c === false) {
+            // substr('a', 1, 1) in PHP 5.x is false, whereas in 7+ is ''
+            if ($c === false || $c === '') {
                 $c = "\x00"; // artificial character after last char of input
             }
 
-            // echo "STATE($state), CHAR(", $c == "\n" ? "\\n" : $c, "), BUF({$buf})<br/>";
+            // echo "STATE($state), CHAR(", $c == "\n" ? "\\n" : $c, "), BUF({$buf})\n";
             switch ($c) {
                 case "\x00":
                     switch ($state) {
@@ -310,7 +312,7 @@ class PhpLatex_Lexer
 
     protected function _setToken($type, $value)
     {
-        // echo "<pre>TOKEN(<strong>$value</strong>)</pre>";
+        // printf("setToken(type = %s, value = %s, pos = %d)\n", $type, $value, $this->_pos);
         return $this->_token = array(
             'type' => $type,
             'value' => $value,

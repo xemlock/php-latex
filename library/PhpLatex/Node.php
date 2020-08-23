@@ -7,7 +7,7 @@ class PhpLatex_Node
 {
     protected $_type;
     protected $_props;
-    protected $_children;
+    protected $_children = array();
 
     /**
      * @param mixed $type
@@ -69,7 +69,7 @@ class PhpLatex_Node
      */
     public function getChildren()
     {
-        return (array) $this->_children;
+        return $this->_children;
     }
 
     /**

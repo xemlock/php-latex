@@ -149,7 +149,8 @@ class PhpLatex_Parser
             // without modyfying the queue
             return $this->_token = $this->_lexer->next();
         }
-        return $this->_token = array_shift($this->_tokenQueue);
+        $this->_token = array_shift($this->_tokenQueue);
+        return $this->_token;
     } // }}}
 
     /**
