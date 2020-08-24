@@ -12,7 +12,7 @@ library - in the browser. For this I recommend using [MathJax](https://www.mathj
 To use php-latex, you install it just as any other php package - with [Composer](https://getcomposer.org/).
 
 ```
-composer install xemlock/php-latex:dev-master
+composer require xemlock/php-latex:dev-master
 ```
 
 ## Usage
