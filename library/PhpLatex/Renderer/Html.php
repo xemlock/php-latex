@@ -413,6 +413,16 @@ class PhpLatex_Renderer_Html extends PhpLatex_Renderer_Abstract
                 case '\\$':
                     return substr($node->value, 1);
 
+                // spaces, based on https://en.wikipedia.org/wiki/Whitespace_character#Unicode
+                case '\\ ':
+                    return '&nbsp;';
+                case '\\,':
+                    return '&thinsp;';
+                case '\\enspace':
+                    return '&ensp;';
+                case '\\quad':
+                    return '&emsp;';
+
                 case '\\ref':
                     // TODO if ref target resides in math mode render \\ref, so that
                     // it can be handled by JS.

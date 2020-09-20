@@ -10,20 +10,28 @@ foreach ($it as $file) {
         continue;
     }
 
-    $fileCommands = array_filter(array_map('trim', file($file)), 'strlen');
-
     // command mode is stored in file name
     if (!preg_match('#^(?P<mode>both|math|text)#', basename($file), $match)) {
         continue;
     }
+
+    $fileCommands = array_filter(array_map(function ($str) {
+        $str = ltrim($str);
+
+        // skip comments
+        if (substr($str, 0, 1) === '%') {
+            return '';
+        }
+
+        return rtrim($str, "\n");
+    }, file($file)), 'strlen');
     $mode = $match['mode'];
 
     foreach ($fileCommands as $command) {
         // extract command name and number of args
-
-        if (!preg_match('#^(?P<command>\\\\([a-zA-Z]+|[^a-zA-Z]))#', $command, $match)) {
+        if (!preg_match('#^(?P<command>\\\\([a-zA-Z]+|[^a-zA-Z]| ))#', $command, $match)) {
             throw new Exception(
-                sprintf('File %s contains invalid command name %s', $file, $command)
+                sprintf("File %s contains invalid command name '%s'", $file, $command)
             );
         }
 
@@ -43,9 +51,27 @@ foreach ($it as $file) {
             }
         }
 
-        $commands[$name]['mode'] = $mode;
-        $commands[$name]['numArgs'] = $numArgs;
-        $commands[$name]['numOptArgs'] = $numOptArgs;
+        if (isset($commands[$name])) {
+            if ($commands[$name]['numArgs'] !== $numArgs) {
+                throw new Exception(sprintf(
+                    'Duplicate definition of %s, conflicting number of arguments %d vs %d',
+                    $name, $commands[$name]['numArgs'], $numArgs
+                ));
+            }
+            if ($commands[$name]['numOptArgs'] !== $numOptArgs) {
+                throw new Exception(sprintf(
+                    'Duplicate definition of %s, conflicting number of optional arguments %d vs %d',
+                    $name, $commands[$name]['numOptArgs'], $numOptArgs
+                ));
+            }
+            if ($commands[$name]['mode'] !== 'both' && $commands[$name]['mode'] !== $mode) {
+                $commands[$name]['mode'] = 'both';
+            }
+        } else {
+            $commands[$name]['mode'] = $mode;
+            $commands[$name]['numArgs'] = $numArgs;
+            $commands[$name]['numOptArgs'] = $numOptArgs;
+        }
     }
 }
 
