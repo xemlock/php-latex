@@ -19,7 +19,7 @@ composer require xemlock/php-latex:dev-master
 
 Basic usage is as follows:
 
-Parsing LaTex source code:
+Parsing LaTeX source code:
 
 ```php
 $parser = new PhpLatex_Parser();
@@ -53,6 +53,8 @@ $parser->addCommand(
         'mode' => 'both',
         // whether command arguments should be parsed, or handled as-is
         'parseArgs' => false,
+        // whether command allows a starred variant
+        'starred' => false,
     )
 );
 ```

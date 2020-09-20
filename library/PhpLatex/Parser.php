@@ -67,6 +67,11 @@ class PhpLatex_Parser
         $this->_environs = require dirname(__FILE__) . '/environs.php';
     }
 
+    /**
+     * @param string $name
+     * @param array $options
+     * @return $this
+     */
     public function addCommand($name, array $options) // {{{
     {
         if (!preg_match('/^\\\\([a-zA-Z]+|[^a-zA-Z])$/', $name)) {
