@@ -6,7 +6,7 @@ $commands = require dirname(__FILE__) . '/base.php';
 $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator('.'));
 
 foreach ($it as $file) {
-    if (substr($file, -4) !== '.txt') {
+    if (substr($file, -4) !== '.tex') {
         continue;
     }
 

@@ -15,5 +15,5 @@ trim_trailing_whitespace = false
 [Makefile]
 indent_style = tab
 
-[data/*.txt]
+[data/*.tex]
 trim_trailing_whitespace = false
