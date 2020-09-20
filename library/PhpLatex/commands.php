@@ -14,6 +14,11 @@
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
+    '\\*' => array(
+        'mode' => 'both',
+        'numArgs' => 0,
+        'numOptArgs' => 0,
+    ),
     '\\,' => array(
         'mode' => 'both',
         'numArgs' => 0,

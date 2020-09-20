@@ -9,7 +9,7 @@ abstract class PhpLatex_Renderer_Abstract
      * presented as the LaTeX source for processing (validating and rendering)
      * by external tools, i.e. MathJaX, mathTeX or mimeTeX.
      *
-     * @param PhpLatex_Node|array $node
+     * @param PhpLatex_Node|PhpLatex_Node[] $node
      * @return string
      */
     public static function toLatex($node) // {{{
@@ -45,18 +45,21 @@ abstract class PhpLatex_Renderer_Abstract
                     }
 
                 case PhpLatex_Parser::TYPE_COMMAND:
+                    $value = $node->value;
+                    if ($node->starred) {
+                        $value .= '*';
+                    }
                     if ($node->value === '\\string') {
-                        $value = $node->value;
                         foreach ($node->getChildren() as $child) {
                             $value .= self::toLatex($child);
                         }
                         return $value;
                     }
                     if ($node->symbol || $node->hasChildren()) {
-                        return $node->value . self::toLatex($node->getChildren());
+                        return $value . self::toLatex($node->getChildren());
                     }
                     // control word, add space that was removed after
-                    return $node->value . ' ';
+                    return $value . ' ';
 
                 case PhpLatex_Parser::TYPE_ENVIRON:
                     return "\\begin{" . $node->value . "}\n"

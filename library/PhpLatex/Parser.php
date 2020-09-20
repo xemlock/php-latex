@@ -101,6 +101,7 @@ class PhpLatex_Parser
             'numArgs' => isset($options['numArgs']) ? intval($options['numArgs']) : 0,
             'numOptArgs' => isset($options['numOptArgs']) ? intval($options['numOptArgs']) : 0,
             'parseArgs' => !isset($options['parseArgs']) || $options['parseArgs'], // parse by default
+            'starred' => isset($options['starred']) ? $options['starred'] : false,
         );
         return $this;
     } // }}}
@@ -544,8 +545,8 @@ class PhpLatex_Parser
                 (0 === strncmp($next['value'], '*', 1))
             ) {
                 $this->_next();
-                $starred = true;
-                // remove asterisk from the beggining of token value, no need
+                $nodeStarred = true;
+                // remove asterisk from the beginning of token value, no need
                 // to use mbstring functions
                 $next['value'] = substr($next['value'], 1);
                 if (strlen($next['value'])) {

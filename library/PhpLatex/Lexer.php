@@ -230,7 +230,7 @@ class PhpLatex_Lexer
 
                 case '}':
                 case '{':
-                case '[': // square brackets asre considered special symbols, as
+                case '[': // square brackets are considered special symbols, as
                 case ']': // they delimit optional arguments
                 // case '(': no reason why ordinary brackets should be
                 // case ')': considered a special symbol

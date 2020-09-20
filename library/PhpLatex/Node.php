@@ -127,4 +127,9 @@ class PhpLatex_Node
     {
         return $this->getProp($key);
     }
+
+    public function __isset($key)
+    {
+        return $this->getProp($key) !== null;
+    }
 }
