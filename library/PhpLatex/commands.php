@@ -89,12 +89,12 @@
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
-    '\\arrowvert' => array(
+    '\\Arrowvert' => array(
         'mode' => 'math',
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
-    '\\Arrowvert' => array(
+    '\\arrowvert' => array(
         'mode' => 'math',
         'numArgs' => 0,
         'numOptArgs' => 0,
@@ -577,12 +577,12 @@
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
-    '\\delta' => array(
+    '\\Delta' => array(
         'mode' => 'math',
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
-    '\\Delta' => array(
+    '\\delta' => array(
         'mode' => 'math',
         'numArgs' => 0,
         'numOptArgs' => 0,
@@ -642,12 +642,12 @@
         'numArgs' => 1,
         'numOptArgs' => 0,
     ),
-    '\\doteq' => array(
+    '\\Doteq' => array(
         'mode' => 'math',
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
-    '\\Doteq' => array(
+    '\\doteq' => array(
         'mode' => 'math',
         'numArgs' => 0,
         'numOptArgs' => 0,
@@ -1064,12 +1064,12 @@
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
-    '\\leftarrow' => array(
+    '\\Leftarrow' => array(
         'mode' => 'math',
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
-    '\\Leftarrow' => array(
+    '\\leftarrow' => array(
         'mode' => 'math',
         'numArgs' => 0,
         'numOptArgs' => 0,
@@ -1269,12 +1269,12 @@
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
-    '\\longleftrightarrow' => array(
+    '\\Longleftrightarrow' => array(
         'mode' => 'math',
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
-    '\\Longleftrightarrow' => array(
+    '\\longleftrightarrow' => array(
         'mode' => 'math',
         'numArgs' => 0,
         'numOptArgs' => 0,
@@ -1519,12 +1519,12 @@
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
-    '\\nleftarrow' => array(
+    '\\nLeftarrow' => array(
         'mode' => 'math',
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
-    '\\nLeftarrow' => array(
+    '\\nleftarrow' => array(
         'mode' => 'math',
         'numArgs' => 0,
         'numOptArgs' => 0,
@@ -1579,12 +1579,12 @@
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
-    '\\nrightarrow' => array(
+    '\\nRightarrow' => array(
         'mode' => 'math',
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
-    '\\nRightarrow' => array(
+    '\\nrightarrow' => array(
         'mode' => 'math',
         'numArgs' => 0,
         'numOptArgs' => 0,
@@ -1659,7 +1659,7 @@
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
-    '\\nvdash' => array(
+    '\\nVDash' => array(
         'mode' => 'math',
         'numArgs' => 0,
         'numOptArgs' => 0,
@@ -1669,12 +1669,12 @@
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
-    '\\nVDash' => array(
+    '\\nvDash' => array(
         'mode' => 'math',
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
-    '\\nvDash' => array(
+    '\\nvdash' => array(
         'mode' => 'math',
         'numArgs' => 0,
         'numOptArgs' => 0,
@@ -1694,12 +1694,12 @@
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
-    '\\omega' => array(
+    '\\Omega' => array(
         'mode' => 'math',
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
-    '\\Omega' => array(
+    '\\omega' => array(
         'mode' => 'math',
         'numArgs' => 0,
         'numOptArgs' => 0,
@@ -1793,12 +1793,12 @@
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
-    '\\pi' => array(
+    '\\Pi' => array(
         'mode' => 'math',
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
-    '\\Pi' => array(
+    '\\pi' => array(
         'mode' => 'math',
         'numArgs' => 0,
         'numOptArgs' => 0,
@@ -1883,12 +1883,12 @@
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
-    '\\psi' => array(
+    '\\Psi' => array(
         'mode' => 'math',
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
-    '\\Psi' => array(
+    '\\psi' => array(
         'mode' => 'math',
         'numArgs' => 0,
         'numOptArgs' => 0,
@@ -2070,12 +2070,12 @@
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
-    '\\sigma' => array(
+    '\\Sigma' => array(
         'mode' => 'math',
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
-    '\\Sigma' => array(
+    '\\sigma' => array(
         'mode' => 'math',
         'numArgs' => 0,
         'numOptArgs' => 0,
@@ -2197,12 +2197,12 @@
             2 => 'subparagraph',
         ),
     ),
-    '\\subset' => array(
+    '\\Subset' => array(
         'mode' => 'math',
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
-    '\\Subset' => array(
+    '\\subset' => array(
         'mode' => 'math',
         'numArgs' => 0,
         'numOptArgs' => 0,
@@ -2287,12 +2287,12 @@
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
-    '\\supset' => array(
+    '\\Supset' => array(
         'mode' => 'math',
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
-    '\\Supset' => array(
+    '\\supset' => array(
         'mode' => 'math',
         'numArgs' => 0,
         'numOptArgs' => 0,
@@ -2677,22 +2677,22 @@
         'numArgs' => 1,
         'numOptArgs' => 0,
     ),
-    '\\uparrow' => array(
-        'mode' => 'math',
-        'numArgs' => 0,
-        'numOptArgs' => 0,
-    ),
     '\\Uparrow' => array(
         'mode' => 'math',
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
-    '\\updownarrow' => array(
+    '\\uparrow' => array(
         'mode' => 'math',
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
     '\\Updownarrow' => array(
+        'mode' => 'math',
+        'numArgs' => 0,
+        'numOptArgs' => 0,
+    ),
+    '\\updownarrow' => array(
         'mode' => 'math',
         'numArgs' => 0,
         'numOptArgs' => 0,
@@ -2837,7 +2837,7 @@
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
-    '\\vdash' => array(
+    '\\Vdash' => array(
         'mode' => 'math',
         'numArgs' => 0,
         'numOptArgs' => 0,
@@ -2847,7 +2847,7 @@
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
-    '\\Vdash' => array(
+    '\\vdash' => array(
         'mode' => 'math',
         'numArgs' => 0,
         'numOptArgs' => 0,

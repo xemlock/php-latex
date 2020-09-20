@@ -75,7 +75,18 @@ foreach ($it as $file) {
     }
 }
 
-uksort($commands, 'strcasecmp');
+uksort($commands, function ($a, $b) {
+    // strip leading backslash
+    $a = substr($a, 1);
+    $b = substr($b, 1);
+
+    $casecmp = strcasecmp($a, $b);
+    if (!$casecmp) {
+        return strcmp($a, $b);
+    }
+
+    return $casecmp;
+});
 
 $php = str_replace('  ', '    ', var_export($commands, true));
 $php = preg_replace('#\s+=>\s+array \(#', " => array(", $php);
