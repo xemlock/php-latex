@@ -6,6 +6,11 @@ return array(
         'parseArgs' => false,
         'mode'      => 'both',
     ),
+    '\\ ' => array(
+        'mode'       => 'both',
+        'numArgs'    => 0,
+        'numOptArgs' => 0,
+    ),
     '\\chapter' => array(
         'numArgs'   => 1,
         'mode'      => 'text',

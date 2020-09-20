@@ -16,14 +16,9 @@ foreach ($it as $file) {
     }
 
     $fileCommands = array_filter(array_map(function ($str) {
-        $str = ltrim($str);
-
-        // skip comments
-        if (substr($str, 0, 1) === '%') {
-            return '';
-        }
-
-        return rtrim($str, "\n");
+        $str = preg_replace('/%.*/', '', $str);
+        $str = trim($str);
+        return $str;
     }, file($file)), 'strlen');
     $mode = $match['mode'];
 

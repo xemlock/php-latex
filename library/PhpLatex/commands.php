@@ -9,6 +9,11 @@
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
+    '\\"' => array(
+        'mode' => 'text',
+        'numArgs' => 1,
+        'numOptArgs' => 0,
+    ),
     '\\#' => array(
         'mode' => 'both',
         'numArgs' => 0,
@@ -17,6 +22,11 @@
     '\\$' => array(
         'mode' => 'both',
         'numArgs' => 0,
+        'numOptArgs' => 0,
+    ),
+    '\\\'' => array(
+        'mode' => 'text',
+        'numArgs' => 1,
         'numOptArgs' => 0,
     ),
     '\\*' => array(
@@ -29,6 +39,11 @@
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
+    '\\.' => array(
+        'mode' => 'text',
+        'numArgs' => 1,
+        'numOptArgs' => 0,
+    ),
     '\\:' => array(
         'mode' => 'math',
         'numArgs' => 0,
@@ -37,6 +52,11 @@
     '\\;' => array(
         'mode' => 'math',
         'numArgs' => 0,
+        'numOptArgs' => 0,
+    ),
+    '\\=' => array(
+        'mode' => 'text',
+        'numArgs' => 1,
         'numOptArgs' => 0,
     ),
     '\\@' => array(
@@ -57,6 +77,11 @@
     '\\_' => array(
         'mode' => 'both',
         'numArgs' => 0,
+        'numOptArgs' => 0,
+    ),
+    '\\`' => array(
+        'mode' => 'text',
+        'numArgs' => 1,
         'numOptArgs' => 0,
     ),
     '\\acute' => array(
@@ -132,6 +157,11 @@
     '\\asymp' => array(
         'mode' => 'math',
         'numArgs' => 0,
+        'numOptArgs' => 0,
+    ),
+    '\\b' => array(
+        'mode' => 'text',
+        'numArgs' => 1,
         'numOptArgs' => 0,
     ),
     '\\backepsilon' => array(
@@ -349,6 +379,11 @@
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
+    '\\c' => array(
+        'mode' => 'text',
+        'numArgs' => 1,
+        'numOptArgs' => 0,
+    ),
     '\\Cap' => array(
         'mode' => 'math',
         'numArgs' => 0,
@@ -545,6 +580,11 @@
     '\\curvearrowright' => array(
         'mode' => 'math',
         'numArgs' => 0,
+        'numOptArgs' => 0,
+    ),
+    '\\d' => array(
+        'mode' => 'text',
+        'numArgs' => 1,
         'numOptArgs' => 0,
     ),
     '\\dag' => array(
@@ -947,6 +987,11 @@
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
+    '\\H' => array(
+        'mode' => 'text',
+        'numArgs' => 1,
+        'numOptArgs' => 0,
+    ),
     '\\hat' => array(
         'mode' => 'math',
         'numArgs' => 1,
@@ -1037,6 +1082,11 @@
     '\\jmath' => array(
         'mode' => 'math',
         'numArgs' => 0,
+        'numOptArgs' => 0,
+    ),
+    '\\k' => array(
+        'mode' => 'text',
+        'numArgs' => 1,
         'numOptArgs' => 0,
     ),
     '\\kappa' => array(
@@ -2352,6 +2402,11 @@
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
+    '\\t' => array(
+        'mode' => 'text',
+        'numArgs' => 1,
+        'numOptArgs' => 0,
+    ),
     '\\tan' => array(
         'mode' => 'math',
         'numArgs' => 0,
@@ -2687,6 +2742,11 @@
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
+    '\\u' => array(
+        'mode' => 'text',
+        'numArgs' => 1,
+        'numOptArgs' => 0,
+    ),
     '\\ulcorner' => array(
         'mode' => 'math',
         'numArgs' => 0,
@@ -2758,6 +2818,11 @@
         'numOptArgs' => 0,
     ),
     '\\url' => array(
+        'mode' => 'text',
+        'numArgs' => 1,
+        'numOptArgs' => 0,
+    ),
+    '\\v' => array(
         'mode' => 'text',
         'numArgs' => 1,
         'numOptArgs' => 0,
