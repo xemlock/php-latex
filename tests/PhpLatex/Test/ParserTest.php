@@ -55,4 +55,10 @@ class PhpLatex_Test_ParserTest extends PHPUnit_Framework_TestCase
         $tree = $this->parser->parse('\\* \\section*{Foo} \\LaTeX*');
         $this->assertSame('\\* \\section*{Foo} \\LaTeX *', PhpLatex_Renderer_Abstract::toLatex($tree));
     }
+
+    public function testSpaces()
+    {
+        $tree = $this->parser->parse('\\ \\, \\: \\;');
+        $this->assertSame('\\ \\, \(\\:\) \(\\;\)', PhpLatex_Renderer_Abstract::toLatex($tree));
+    }
 }

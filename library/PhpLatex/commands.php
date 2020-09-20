@@ -4,6 +4,11 @@
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
+    '\\!' => array(
+        'mode' => 'math',
+        'numArgs' => 0,
+        'numOptArgs' => 0,
+    ),
     '\\#' => array(
         'mode' => 'both',
         'numArgs' => 0,
@@ -21,6 +26,21 @@
     ),
     '\\,' => array(
         'mode' => 'both',
+        'numArgs' => 0,
+        'numOptArgs' => 0,
+    ),
+    '\\:' => array(
+        'mode' => 'math',
+        'numArgs' => 0,
+        'numOptArgs' => 0,
+    ),
+    '\\;' => array(
+        'mode' => 'math',
+        'numArgs' => 0,
+        'numOptArgs' => 0,
+    ),
+    '\\@' => array(
+        'mode' => 'text',
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
