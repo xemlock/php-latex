@@ -251,7 +251,7 @@ class PhpLatex_Renderer_Html extends PhpLatex_Renderer_Abstract
                 continue;
             }
 
-            $cell = trim($this->_renderNode($child));
+            $cell = $this->_renderNode($child);
 
             // if last row consists only of an empty string ignore it
             if ($i === count($children) - 1 && $cell === '') {
@@ -282,7 +282,8 @@ class PhpLatex_Renderer_Html extends PhpLatex_Renderer_Abstract
                     $style = ' style="text-align:right"';
                 }
 
-                $html .= '<td' . $style . '>' . (isset($table[$row][$col]) ? $table[$row][$col] : '') . '</td>';
+                $cell = isset($table[$row][$col]) ? trim($table[$row][$col]) : '';
+                $html .= '<td' . $style . '>' . $cell . '</td>';
             }
             $html .= '</tr>';
         }
