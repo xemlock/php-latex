@@ -1,6 +1,6 @@
 # php-latex
 
-[![Build status](https://img.shields.io/circleci/build/gh/xemlock/php-latex?logo=circleci)](https://circleci.com/gh/xemlock/php-latex)
+[![Build status](https://github.com/xemlock/php-latex/workflows/build/badge.svg)](https://github.com/xemlock/php-latex/actions?query=workflow/build)
 [![License](https://img.shields.io/packagist/l/xemlock/php-latex.svg)](https://packagist.org/packages/xemlock/php-latex)
 
 
