@@ -8,3 +8,5 @@ composer.lock
 *.swo
 .idea
 .vscode
+
+.phpunit.result.cache

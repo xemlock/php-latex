@@ -2,7 +2,7 @@
 <phpunit backupGlobals="false"
          colors="true"
          verbose="true"
-         bootstrap="vendor/autoload.php">
+         bootstrap="tests/bootstrap.php">
     <php>
         <ini name="display_errors" value="On" />
         <ini name="display_startup_errors" value="On" />

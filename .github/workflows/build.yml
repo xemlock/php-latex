@@ -11,6 +11,8 @@ jobs:
             matrix:
                 operating-system: ['ubuntu-latest']
                 php-versions:
+                    - 8.1
+                    - '8.0'
                     - 7.4
 
         steps:

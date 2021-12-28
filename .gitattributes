@@ -1,0 +1,9 @@
+* text=auto
+
+/tests              export-ignore
+/.editorconfig      export-ignore
+/.gitattributes     export-ignore
+/.github            export-ignore
+/.gitignore         export-ignore
+/.scripts           export-ignore
+/phpunit.xml.dist   export-ignore
