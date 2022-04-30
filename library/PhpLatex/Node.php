@@ -92,6 +92,14 @@ class PhpLatex_Node
     }
 
     /**
+     * @return array
+     */
+    public function getProps()
+    {
+        return (array) $this->_props;
+    }
+
+    /**
      * @param  string $key
      * @param  mixed $value
      * @return PhpLatex_Node
