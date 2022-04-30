@@ -51,9 +51,13 @@ return array(
         'math'      => true,
         'starred'   => true,
     ),
-    'tabular'     => array(
+    'tabular' => array(
         'numArgs'   => 1,
         'mode'      => PhpLatex_Parser::MODE_TEXT,
         'environs'  => array('itemize', 'enumerate', 'tabular'),
+    ),
+    'array' => array(
+        'numArgs'   => 1,
+        'mode'      => PhpLatex_Parser::MODE_MATH,
     ),
 );
