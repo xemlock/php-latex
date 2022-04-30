@@ -857,6 +857,11 @@
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
+    '\\footnotesize' => array(
+        'mode' => 'text',
+        'numArgs' => 0,
+        'numOptArgs' => 0,
+    ),
     '\\forall' => array(
         'mode' => 'math',
         'numArgs' => 0,
@@ -1038,6 +1043,16 @@
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
+    '\\Huge' => array(
+        'mode' => 'text',
+        'numArgs' => 0,
+        'numOptArgs' => 0,
+    ),
+    '\\huge' => array(
+        'mode' => 'text',
+        'numArgs' => 0,
+        'numOptArgs' => 0,
+    ),
     '\\Im' => array(
         'mode' => 'math',
         'numArgs' => 0,
@@ -1122,6 +1137,21 @@
     ),
     '\\langle' => array(
         'mode' => 'math',
+        'numArgs' => 0,
+        'numOptArgs' => 0,
+    ),
+    '\\LARGE' => array(
+        'mode' => 'text',
+        'numArgs' => 0,
+        'numOptArgs' => 0,
+    ),
+    '\\Large' => array(
+        'mode' => 'text',
+        'numArgs' => 0,
+        'numOptArgs' => 0,
+    ),
+    '\\large' => array(
+        'mode' => 'text',
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
@@ -1645,6 +1675,11 @@
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
+    '\\normalsize' => array(
+        'mode' => 'text',
+        'numArgs' => 0,
+        'numOptArgs' => 0,
+    ),
     '\\nparallel' => array(
         'mode' => 'math',
         'numArgs' => 0,
@@ -2109,6 +2144,11 @@
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
+    '\\scriptsize' => array(
+        'mode' => 'text',
+        'numArgs' => 0,
+        'numOptArgs' => 0,
+    ),
     '\\searrow' => array(
         'mode' => 'math',
         'numArgs' => 0,
@@ -2178,6 +2218,11 @@
     ),
     '\\sinh' => array(
         'mode' => 'math',
+        'numArgs' => 0,
+        'numOptArgs' => 0,
+    ),
+    '\\small' => array(
+        'mode' => 'text',
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
@@ -2695,6 +2740,11 @@
     ),
     '\\times' => array(
         'mode' => 'math',
+        'numArgs' => 0,
+        'numOptArgs' => 0,
+    ),
+    '\\tiny' => array(
+        'mode' => 'text',
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
