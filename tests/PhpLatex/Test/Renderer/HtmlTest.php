@@ -30,7 +30,8 @@ class PhpLatex_Test_Renderer_HtmlTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('A B<br/><br/>A&nbsp;B<br/><br/>A&thinsp;B<br/><br/>A&ensp;B<br/><br/>A&emsp;B', $html);
     }
 
-    public function testIssue4() {
+    public function testIssue4()
+    {
         $renderer = new PhpLatex_Renderer_Html();
         $html = $renderer->render('
             \textbf{Should not be}  joined

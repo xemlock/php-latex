@@ -52,7 +52,7 @@ return array(
         'starred'   => true,
     ),
     'tabular'     => array(
-        'numArgs'     => 1,
+        'numArgs'   => 1,
         'mode'      => PhpLatex_Parser::MODE_TEXT,
         'environs'  => array('itemize', 'enumerate', 'tabular'),
     ),

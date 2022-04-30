@@ -62,9 +62,23 @@ abstract class PhpLatex_Renderer_Abstract
                     return $value . ' ';
 
                 case PhpLatex_Parser::TYPE_ENVIRON:
-                    return "\\begin{" . $node->value . "}\n"
-                         . self::toLatex($node->getChildren())
-                         . "\\end{" . $node->value . "}\n";
+                    $children = $node->getChildren();
+                    $argsEnd = 0;
+
+                    foreach ($children as $child) {
+                        if ($child->arg) {
+                            ++$argsEnd;
+                        } else {
+                            break;
+                        }
+                    }
+
+                    $args = array_slice($children, 0, $argsEnd);
+                    $children = array_slice($children, $argsEnd);
+
+                    return "\\begin{" . $node->value . "}" . self::toLatex($args) . "\n"
+                         . self::toLatex($children) . "\n"
+                         . "\\end{" . $node->value . "}";
 
                 case PhpLatex_Parser::TYPE_DOCUMENT:
                     return self::toLatex($node->getChildren());

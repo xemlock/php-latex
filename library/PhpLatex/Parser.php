@@ -348,6 +348,7 @@ class PhpLatex_Parser
                 if (false === ($arg = $this->_parseArg($mode, $environ))) {
                     $arg = $this->_createNode(self::TYPE_GROUP, $mode);
                 }
+                $arg->setProp('arg', true);
                 $args[] = $arg;
             }
         } elseif ($this->_skipUndefinedEnvirons) {
