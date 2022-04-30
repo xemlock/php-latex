@@ -66,4 +66,8 @@ return array(
         'mode'         => 'text',
         'environs'     => array('itemize', 'enumerate'),
     ),
+    '\\hline' => array(
+        'mode'         => 'text',
+        'environs'     => array('tabular'),
+    ),
 );

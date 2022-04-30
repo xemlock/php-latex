@@ -1007,6 +1007,12 @@
         'numArgs' => 0,
         'numOptArgs' => 0,
     ),
+    '\\hline' => array(
+        'mode' => 'text',
+        'environs' => array(
+            0 => 'tabular',
+        ),
+    ),
     '\\hom' => array(
         'mode' => 'math',
         'numArgs' => 0,
