@@ -153,9 +153,11 @@ class PhpLatex_Parser
         if (empty($this->_tokenQueue)) {
             // token queue is empty, get next token from lexer and return it
             // without modyfying the queue
-            return $this->_token = $this->_lexer->next();
+            $token = $this->_lexer->next();
+        } else {
+            $token = array_shift($this->_tokenQueue);
         }
-        $this->_token = array_shift($this->_tokenQueue);
+        $this->_token = $token;
         return $this->_token;
     } // }}}
 

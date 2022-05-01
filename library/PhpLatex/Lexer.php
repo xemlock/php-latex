@@ -17,6 +17,12 @@ class PhpLatex_Lexer
     protected $_str;
     protected $_pos;
 
+    protected $_line;
+    protected $_column;
+
+    protected $_pline;
+    protected $_pcolumn;
+
     protected $_token;
 
     public function __construct($str)
@@ -52,6 +58,9 @@ class PhpLatex_Lexer
         // echo '<pre>INTERNAL: ', (htmlspecialchars($str)), '</pre>';
         $this->_str = $str;
         $this->_pos = 0;
+
+        $this->_line = 1;
+        $this->_column = 0;
     }
 
     public function current()
@@ -72,6 +81,11 @@ class PhpLatex_Lexer
         while ($this->_pos < $n + 1) {
             $c = substr($this->_str, $this->_pos, 1);
             $this->_pos++;
+
+            $this->_pcolumn = $this->_column;
+            $this->_pline = $this->_line;
+
+            $this->_column++;
 
             // substr('a', 1, 1) in PHP 5.x is false, whereas in 7+ is ''
             if ($c === false || $c === '') {
@@ -106,11 +120,12 @@ class PhpLatex_Lexer
                             // if there is something in the buffer return it
                             // before switching state
                             if (strlen($buf)) {
-                                --$this->_pos;
+                                $this->_ungetChar();
                                 return $this->_setToken(self::TYPE_TEXT, $buf);
                             }
                             $state = self::STATE_BSLASH;
                             $buf = "\\";
+                            $this->storeTokenPosition();
                             break;
 
                         case self::STATE_BSLASH:
@@ -118,11 +133,11 @@ class PhpLatex_Lexer
 
                         case self::STATE_CONTROL:
                             // end of command, unget char, return buffer
-                            --$this->_pos;
+                            $this->_ungetChar();
                             return $this->_setToken(self::TYPE_CWORD, $buf);
 
                         case self::STATE_SPACE:
-                            --$this->_pos;
+                            $this->_ungetChar();
                             return $this->_setSpaceToken($buf);
                     }
                     break;
@@ -132,15 +147,21 @@ class PhpLatex_Lexer
                     switch ($state) {
                         case self::STATE_DEFAULT:
                             if (strlen($buf)) {
-                                --$this->_pos;
+                                $this->_ungetChar();
                                 return $this->_setToken(self::TYPE_TEXT, $buf);
                             }
                             $state = self::STATE_SPACE;
                             $buf = $c;
+                            $this->storeTokenPosition();
+                            if ($c === "\n") {
+                                $this->_line++;
+                                $this->_column = 0;
+                            }
                             // if ($c === "\n") { increment line count }
                             break;
 
                         case self::STATE_BSLASH:
+                            $this->storeTokenPosition();
                             // if space then return control symbol, otherwise
                             // switch to default state and unget this char to
                             // be handler later (ignore this backslash)
@@ -148,16 +169,20 @@ class PhpLatex_Lexer
                                 return $this->_setToken(self::TYPE_CSYMBOL, '\\ ');
                             }
                             $state = self::STATE_DEFAULT;
-                            --$this->_pos;
+                            $this->_ungetChar();
                             break;
 
                         case self::STATE_CONTROL:
                             // end of control word
-                            --$this->_pos;
+                            $this->_ungetChar();
                             return $this->_setToken(self::TYPE_CWORD, $buf);
 
                         case self::STATE_SPACE:
                             $buf .= $c;
+                            if ($c === "\n") {
+                                $this->_line++;
+                                $this->_column = 0;
+                            }
                             // if ($c === "\n") { increment line count }
                             break;
                     }
@@ -169,7 +194,7 @@ class PhpLatex_Lexer
                             // there may be something in buffer, if so, return
                             // it before returning this token
                             if (strlen($buf)) {
-                                --$this->_pos;
+                                $this->_ungetChar();
                                 return $this->_setToken(self::TYPE_TEXT, $buf);
                             }
 
@@ -193,6 +218,8 @@ class PhpLatex_Lexer
                             // Comment-terminating newline and newline occuring
                             // after it (intermediate spaces are ignored) are
                             // interpreted as \par command.
+
+                            $this->storeTokenPosition();
 
                             // at this point $this->_pos stores a position of
                             // the next character (a character that will be
@@ -219,11 +246,11 @@ class PhpLatex_Lexer
 
                         case self::STATE_CONTROL:
                             // end of command name, unget char
-                            --$this->_pos;
+                            $this->_ungetChar();
                             return $this->_setToken(self::TYPE_CWORD, $buf);
 
                         case self::STATE_SPACE:
-                            --$this->_pos;
+                            $this->_ungetChar();
                             return $this->_setSpaceToken($buf);
                     }
                     break;
@@ -245,10 +272,11 @@ class PhpLatex_Lexer
                             // there may be something in buffer, if so, return
                             // it before returning this token
                             if (strlen($buf)) {
-                                --$this->_pos;
+                                $this->_ungetChar();
                                 return $this->_setToken(self::TYPE_TEXT, $buf);
                             }
                             // unescaped special character
+                            $this->storeTokenPosition();
                             return $this->_setToken(self::TYPE_SPECIAL, $c);
 
                         case self::STATE_BSLASH:
@@ -257,11 +285,11 @@ class PhpLatex_Lexer
 
                         case self::STATE_CONTROL:
                             // end of command name, unget char
-                            --$this->_pos;
+                            $this->_ungetChar();
                             return $this->_setToken(self::TYPE_CWORD, $buf);
 
                         case self::STATE_SPACE:
-                            --$this->_pos;
+                            $this->_ungetChar();
                             return $this->_setSpaceToken($buf);
                     }
                     break;
@@ -269,6 +297,9 @@ class PhpLatex_Lexer
                 default:
                     switch ($state) {
                         case self::STATE_DEFAULT:
+                            if ($buf === '') {
+                                $this->storeTokenPosition();
+                            }
                             $buf .= $c;
                             break;
 
@@ -287,13 +318,13 @@ class PhpLatex_Lexer
                                 $buf .= $c;
                             } else {
                                 // not a letter, unget last char, return buffer
-                                --$this->_pos;
+                                $this->_ungetChar();
                                 return $this->_setToken(self::TYPE_CWORD, $buf);
                             }
                             break;
 
                         case self::STATE_SPACE:
-                            --$this->_pos;
+                            $this->_ungetChar();
                             return $this->_setSpaceToken($buf);
                     }
                     break;
@@ -310,25 +341,46 @@ class PhpLatex_Lexer
         return false;
     }
 
-    protected function _setToken($type, $value)
+    protected function _ungetChar()
+    {
+        --$this->_pos;
+        $this->_line = $this->_pline;
+        $this->_column = $this->_pcolumn;
+    }
+
+    protected $_tokenPosition = null;
+
+    protected function storeTokenPosition()
+    {
+        $this->_tokenPosition = array('line' => $this->_line, 'column' => $this->_column);
+    }
+
+    protected function _setToken($type, $value, $raw = null)
     {
         // printf("setToken(type = %s, value = %s, pos = %d)\n", $type, $value, $this->_pos);
-        return $this->_token = array(
+        $position = $this->_tokenPosition;
+
+        $token = array(
             'type' => $type,
             'value' => $value,
+            'line' => $position ? $position['line'] : null,
+            'column' => $position ? $position['column'] : null,
         );
+        if (isset($raw)) {
+            $token['raw'] = $raw; // raw whitespace value
+        }
+        return $this->_token = $token;
     }
 
     /**
      * Return token based on the contents of given whitespace string.
      *
-     *        // consume all whitespaces, if among them more than
-     *  // one LF is found return \par, otherwise append
-     *   // single space to buffer. This is equivalent to the
-     *   // following text transformations:
-     *   // 1. merge spaces into adjacent newlines
-     *   // 2. merge multiple newlines into \par
-     *   // 3. replace single newline with space*
+     * Consume all whitespaces, if among them more than one LF is found,
+     * return \par, otherwise append a single space to the buffer.
+     * This is equivalent to the following text transformations:
+     * 1. merge spaces into adjacent newlines
+     * 2. merge multiple newlines into \par
+     * 3. replace single newline with a space
      *
      * \par is equivalent to: #[ \t]*\n[ \t]*\n[ \t\n]*#
      *
@@ -340,10 +392,10 @@ class PhpLatex_Lexer
         assert(ctype_space($value));
 
         if (substr_count($value, "\n") > 1) {
-            return $this->_setToken(self::TYPE_CWORD, '\\par');
+            return $this->_setToken(self::TYPE_CWORD, '\\par', $value);
         }
 
-        return $this->_setToken(self::TYPE_SPACE, ' ');
+        return $this->_setToken(self::TYPE_SPACE, ' ', $value);
     }
 
     /**
