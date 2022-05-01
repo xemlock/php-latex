@@ -983,7 +983,7 @@ class PhpLatex_Parser
         $validDelimiter = false;
 
         if ($next['type'] === PhpLatex_Lexer::TYPE_TEXT) {
-            $validChars = array('.', '|', '<', '>', '(', ')', '[', ']');
+            $validChars = array('.', '|', '/', '<', '>', '(', ')', '[', ']');
             $firstChar = mb_substr($next['value'], 0, 1);
             if (in_array($firstChar, $validChars)) {
                 $this->_next();
