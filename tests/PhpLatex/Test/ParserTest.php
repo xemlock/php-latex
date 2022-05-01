@@ -100,7 +100,11 @@ class PhpLatex_Test_ParserTest extends PHPUnit_Framework_TestCase
             'with \\rangle and \\langle' => array(
                 '\( \left\langle x^2 \right \rangle \)',
                 '\( \left\langle x^{2} \right\rangle \)',
-            )
+            ),
+            'with unescaped curly brackets' => array(
+                '\( \left { x \right } \)',
+                '\( \left. { x \right. } \)',
+            ),
         );
     }
 

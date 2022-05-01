@@ -622,19 +622,24 @@ class PhpLatex_Parser
      *
      * After this function has run current token, if exists, is neither space
      * nor comment.
+     *
+     * @return array skipped SPACE and COMMENT tokens
      */
-    protected function _skipSpaces() // {{{
+    protected function _skipSpaces()
     {
+        $skipped = array();
         while ($next = $this->_peek()) {
             if ($next['type'] === PhpLatex_Lexer::TYPE_SPACE ||
                 $next['type'] === PhpLatex_Lexer::TYPE_COMMENT
             ) {
+                $skipped[] = $next;
                 $this->_next();
             } else {
                 break;
             }
         }
-    } // }}}
+        return $skipped;
+    }
 
     protected function _parseArg($mode, $environ, $parseArgs = true) // {{{
     {
@@ -829,15 +834,17 @@ class PhpLatex_Parser
      * following text, space and square bracket tokens.
      *
      * @param array $token
+     * @param int $mode
+     * @return PhpLatex_Node
      */
-    protected function _parseText($token, $state) // {{{
+    protected function _parseText($token, $mode)
     {
         $value = $token['value'];
 
         // concatenate output as long as next token is TEXT, SPACE or square
         // brackets
         while ($next = $this->_peek()) {
-            if ($this->_isText($next, $state)) {
+            if ($this->_isText($next, $mode)) {
                 $value .= $next['value'];
                 $this->_next();
             } else {
@@ -845,10 +852,10 @@ class PhpLatex_Parser
             }
         }
 
-        $node = $this->_createNode(self::TYPE_TEXT, $state);
+        $node = $this->_createNode(self::TYPE_TEXT, $mode);
         $node->value = $value;
         return $node;
-    } // }}}
+    }
 
     /**
      * @param array $token
@@ -989,7 +996,19 @@ class PhpLatex_Parser
                 }
             }
         } elseif ($next['type'] === PhpLatex_Lexer::TYPE_CSYMBOL || $next['type'] === PhpLatex_Lexer::TYPE_CWORD) {
-            $validSymbols = array('\{', '\}', '\|', '\rangle', '\langle');
+            // All controls from math-delimiters.tex
+            $validSymbols = array(
+                '\backslash',
+                '\langle',
+                '\lceil',
+                '\lfloor',
+                '\rangle',
+                '\rceil',
+                '\rfloor',
+                '\{',
+                '\|',
+                '\}',
+            );
             if (in_array($next['value'], $validSymbols)) {
                 $delimiter = $next['value'];
                 $validDelimiter = true;
