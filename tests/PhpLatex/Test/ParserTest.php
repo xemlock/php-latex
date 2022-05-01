@@ -93,6 +93,14 @@ class PhpLatex_Test_ParserTest extends PHPUnit_Framework_TestCase
                 '\( \left x^2 \right \)',
                 '\( \left. x^{2} \right. \)',
             ),
+            'with spaces before parenthesis' => array(
+                '\( \left ( x^2 \right ) \)',
+                '\( \left( x^{2} \right) \)',
+            ),
+            'with \\rangle and \\langle' => array(
+                '\( \left\langle x^2 \right \rangle \)',
+                '\( \left\langle x^{2} \right\rangle \)',
+            )
         );
     }
 

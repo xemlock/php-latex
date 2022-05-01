@@ -966,18 +966,21 @@ class PhpLatex_Parser
 
         $environs = (array) $environs;
 
+        $this->_skipSpaces();
         $next = $this->_peek();
         if (!$next) {
             return false;
         }
 
         $delimiter = '.';
+        $validDelimiter = false;
 
         if ($next['type'] === PhpLatex_Lexer::TYPE_TEXT) {
             $validChars = array('.', '|', '<', '>', '(', ')', '[', ']');
             $firstChar = mb_substr($next['value'], 0, 1);
             if (in_array($firstChar, $validChars)) {
                 $this->_next();
+                $validDelimiter = true;
 
                 $delimiter = $firstChar;
                 if (mb_strlen($next['value']) > 1) {
@@ -985,12 +988,28 @@ class PhpLatex_Parser
                     $this->_unget($next);
                 }
             }
-        } elseif ($next['type'] === PhpLatex_Lexer::TYPE_CSYMBOL) {
-            $validSymbols = array('\{', '\}');
+        } elseif ($next['type'] === PhpLatex_Lexer::TYPE_CSYMBOL || $next['type'] === PhpLatex_Lexer::TYPE_CWORD) {
+            $validSymbols = array('\{', '\}', '\|', '\rangle', '\langle');
             if (in_array($next['value'], $validSymbols)) {
                 $delimiter = $next['value'];
+                $validDelimiter = true;
                 $this->_next();
             }
+        }
+
+        if (!$validDelimiter) {
+            // Invalid bracket command
+            // LaTeX error:
+            // I was expecting to see something like `(' or `\{' or
+            // `\}' here. If you typed, e.g., `{' instead of `\{', you
+            // should probably delete the `{' by typing `1' now, so that
+            // braces don't get unbalanced.
+
+            // Insert space before non-space character
+            $this->_unget(array(
+                'type' => 'text',
+                'value' => ' ',
+            ));
         }
 
         $node = $this->_createNode(self::TYPE_COMMAND, self::MODE_MATH);
