@@ -61,4 +61,39 @@ class PhpLatex_Test_ParserTest extends PHPUnit_Framework_TestCase
         $tree = $this->parser->parse('\\ \\, \\: \\;');
         $this->assertSame('\\ \\, \(\\:\) \(\\;\)', PhpLatex_Renderer_Abstract::toLatex($tree));
     }
+
+    /**
+     * @dataProvider provideLeftRight()
+     * @param string $expected
+     * @param string $input
+     */
+    public function testLeftRight($input, $expected = null)
+    {
+        $expected = $expected === null ? $input : $expected;
+        $tree = $this->parser->parse($input);
+        $this->assertSame($expected, PhpLatex_Renderer_Abstract::toLatex($tree));
+    }
+
+    public function provideLeftRight()
+    {
+        return array(
+            'with parenthesis' => array(
+                '\( \left( x^2 \right) \)',
+                '\( \left( x^{2} \right) \)',
+            ),
+            'with curly brackets' => array(
+                '\( \left\{ x^2 \right\} \)',
+                '\( \left\{ x^{2} \right\} \)',
+            ),
+            'with angle brackets' => array(
+                '\( \left< x^2 \right> \)',
+                '\( \left< x^{2} \right> \)',
+            ),
+            'with no delimiters' => array(
+                '\( \left x^2 \right \)',
+                '\( \left. x^{2} \right. \)',
+            ),
+        );
+    }
+
 }

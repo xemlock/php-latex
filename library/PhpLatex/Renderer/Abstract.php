@@ -58,6 +58,11 @@ abstract class PhpLatex_Renderer_Abstract
                     if ($node->symbol || $node->hasChildren()) {
                         return $value . self::toLatex($node->getChildren());
                     }
+
+                    // some control words, e.g. \left[, doesn't need space after
+                    if ($node->noSpaceAfter) {
+                        return $value;
+                    }
                     // control word, add space that was removed after
                     return $value . ' ';
 

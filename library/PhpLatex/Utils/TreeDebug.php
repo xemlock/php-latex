@@ -5,7 +5,17 @@
  */
 class PhpLatex_Utils_TreeDebug
 {
-    public static function debug(PhpLatex_Node $node, $indent = '') {
+    public static function debug(PhpLatex_Node $node, $echo = true)
+    {
+        $result = self::_debug($node);
+        if ($echo) {
+            echo $result;
+            return true;
+        }
+        return $result;
+    }
+
+    protected static function _debug(PhpLatex_Node $node, $indent = '') {
         $str = "type: {$node->getType()}\n";
 
         if (count($node->getProps())) {
@@ -43,7 +53,7 @@ class PhpLatex_Utils_TreeDebug
         if (count($node->getChildren())) {
             $str .= $indent . "children:\n";
             foreach ($node->getChildren() as $child) {
-                $str .= $indent . '  - ' . self::debug($child, $indent . '    ');
+                $str .= $indent . '  - ' . self::_debug($child, $indent . '    ');
             }
         } else {
             $str .= $indent . "children: (empty)\n";

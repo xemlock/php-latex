@@ -493,6 +493,10 @@ class PhpLatex_Parser
             case '\\)':
                 // unmatched math delimiter, skip
                 return false;
+
+            case '\\left':
+            case '\\right':
+                return $this->_parseLeftRight($token, $mode, $environ);
         }
 
         // skip space after control word (before parsing arguments)
@@ -824,7 +828,6 @@ class PhpLatex_Parser
      * Build text node starting from current token and by appending any
      * following text, space and square bracket tokens.
      *
-     * @param PhpLatex_Node $parent
      * @param array $token
      */
     protected function _parseText($token, $state) // {{{
@@ -848,7 +851,6 @@ class PhpLatex_Parser
     } // }}}
 
     /**
-     * @param PhpLatex_Node $parent
      * @param array $token
      * @param int $state
      * @param string $environ
@@ -949,6 +951,53 @@ class PhpLatex_Parser
 
         return false;
     } // }}}
+
+    /**
+     * @param array $token
+     * @param int $mode
+     * @param string|array $environs
+     */
+    protected function _parseLeftRight($token, $mode, $environs)
+    {
+        if ($mode !== self::MODE_MATH) {
+            // wrap in math
+            return false;
+        }
+
+        $environs = (array) $environs;
+
+        $next = $this->_peek();
+        if (!$next) {
+            return false;
+        }
+
+        $delimiter = '.';
+
+        if ($next['type'] === PhpLatex_Lexer::TYPE_TEXT) {
+            $validChars = array('.', '|', '<', '>', '(', ')', '[', ']');
+            $firstChar = mb_substr($next['value'], 0, 1);
+            if (in_array($firstChar, $validChars)) {
+                $this->_next();
+
+                $delimiter = $firstChar;
+                if (mb_strlen($next['value']) > 1) {
+                    $next['value'] = mb_substr($next['value'], 1);
+                    $this->_unget($next);
+                }
+            }
+        } elseif ($next['type'] === PhpLatex_Lexer::TYPE_CSYMBOL) {
+            $validSymbols = array('\{', '\}');
+            if (in_array($next['value'], $validSymbols)) {
+                $delimiter = $next['value'];
+                $this->_next();
+            }
+        }
+
+        $node = $this->_createNode(self::TYPE_COMMAND, self::MODE_MATH);
+        $node->value = $token['value'] . $delimiter;
+        $node->noSpaceAfter = true;
+        return $node;
+    }
 
     /**
      * @param array $token
