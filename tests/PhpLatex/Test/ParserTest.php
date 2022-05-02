@@ -40,7 +40,7 @@ class PhpLatex_Test_ParserTest extends PHPUnit_Framework_TestCase
                 'A B',
             ),
             array(
-                "A\n % comment\nB",
+                "A\n % comment is here\nB",
                 'A B',
             ),
             "LaTeX Error: There's no line here to end." => array(

@@ -90,7 +90,6 @@ class PhpLatex_Lexer
     {
         $state = self::STATE_DEFAULT;
         $buf = '';
-        $n = strlen($this->_str);
 
         do {
             $c = $this->_getChar();
@@ -199,47 +198,36 @@ class PhpLatex_Lexer
                             }
 
                             // http://en.wikibooks.org/wiki/LaTeX/Basics#Comments:
-                            // When LaTeX encounters a % character while
-                            // processing an input file, it ignores the rest of
-                            // the current line, the line break, and all
-                            // whitespace at the beginning of the next line.
-
-                            // The above statement is not exactly true, as can
-                            // be shown by the following example:
+                            // "When LaTeX encounters a % character while processing an input file, it
+                            // ignores the rest of the current line, the line break, and all whitespace
+                            // [newline excluded!] at the beginning of the next line."
+                            // This behavior can be illustrated by the following example:
                             //   A% comment
                             //       B
-                            // will be rendered as AB, whereas:
+                            // will be rendered as:
+                            //   AB
+                            // whereas:
                             //   A% comment
                             //
                             //       B
                             // as:
                             //   A
                             //   B
-                            // Comment-terminating newline and newline occuring
-                            // after it (intermediate spaces are ignored) are
-                            // interpreted as \par command.
+                            // Comment-terminating newline and newline occurring after it
+                            // (intermediate spaces are ignored) are interpreted as \par command.
 
                             $this->storeTokenPosition();
 
-                            // at this point $this->_pos stores a position of
-                            // the next character (a character that will be
-                            // handled in next iteration)
-                            if (false === ($pos = strpos($this->_str, "\n", $this->_pos))) {
-                                // no LF found, point at position after the last
-                                // character in input
-                                $pos = $n;
-                            }
+                            // at this point $this->_pos points to next char, and the offset of a '%' is pos - 1
 
-                            // $pos points now at position of the comment ending
-                            // character (typically LF).
+                            // The \G assertion is true only when the current matching position is at the start
+                            // point of the match, as specified by the offset argument.
+                            // https://www.php.net/manual/en/regexp.reference.escape.php
+                            preg_match('#\G(?<comment>%.*)#', $this->_str, $matches, 0, $this->_pos - 1);
+                            $this->_pos += strlen($matches['comment']) - 1;
+                            $this->_column += strlen($matches['comment']) - 1;
 
-                            $buf = substr($this->_str, $this->_pos - 1, $pos - ($this->_pos - 1));
-
-                            // resume processing at the terminating LF, skipping
-                            // spaces after comment must be done in parser
-                            $this->_pos = $pos;
-
-                            return $this->_setToken(self::TYPE_COMMENT, $buf);
+                            return $this->_setToken(self::TYPE_COMMENT, $matches['comment']);
 
                         case self::STATE_BSLASH:
                             return $this->_setToken(self::TYPE_CSYMBOL, '\\%');
@@ -255,18 +243,20 @@ class PhpLatex_Lexer
                     }
                     break;
 
+                // The following characters play a special role in LaTeX and are called special printing
+                // characters, or simply special characters.
+                // # $ % & ~ _ ^ \ { }
+                // http://www.personal.ceu.hu/tex/specchar.htm
                 case '}':
                 case '{':
-                case '[': // square brackets are considered special symbols, as
-                case ']': // they delimit optional arguments
-                // case '(': no reason why ordinary brackets should be
-                // case ')': considered a special symbol
                 case '~':
                 case '^':
                 case '_':
                 case '&':
                 case '#':
                 case '$':
+                case '[': // square brackets are considered special symbols, as
+                case ']': // they delimit optional arguments
                     switch ($state) {
                         case self::STATE_DEFAULT:
                             // there may be something in buffer, if so, return
@@ -427,6 +417,7 @@ class PhpLatex_Lexer
      */
     protected function _isAlpha($str)
     {
+        // ctype_alpha() is locale dependent so can't be used here
         if (0 < ($len = strlen($str))) {
             for ($i = 0; $i < $len; ++$i) {
                 $c = substr($str, $i, 1);
