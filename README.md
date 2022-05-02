@@ -1,7 +1,7 @@
 # php-latex
 
 [![Build status](https://github.com/xemlock/php-latex/workflows/build/badge.svg)](https://github.com/xemlock/php-latex/actions?query=workflow/build)
-[![License](https://img.shields.io/packagist/l/xemlock/php-latex.svg)](https://packagist.org/packages/xemlock/php-latex)
+[![License](https://img.shields.io/github/license/xemlock/php-latex.svg)](https://packagist.org/packages/xemlock/php-latex)
 
 
 The main purpose of this library is to provide a valid LaTeX output from, not always valid, user input. You can also render LaTeX code to HTML, with one limitation though - rendering to HTML is done only for the text mode, the math mode needs to be handled by a JavaScript
