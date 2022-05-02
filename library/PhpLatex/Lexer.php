@@ -2,6 +2,8 @@
 
 class PhpLatex_Lexer
 {
+    const EOF = "EOF";
+
     const STATE_DEFAULT = 0;
     const STATE_BSLASH  = 1;
     const STATE_CONTROL = 2;
@@ -23,7 +25,15 @@ class PhpLatex_Lexer
     protected $_pline;
     protected $_pcolumn;
 
+    /**
+     * @var array|null
+     */
     protected $_token;
+
+    /**
+     * @var array|null
+     */
+    protected $_tokenPosition;
 
     public function __construct($str)
     {
@@ -36,7 +46,7 @@ class PhpLatex_Lexer
         $str = trim($str);
 
         // perform initial transformations to mimic how TeX handles whitespaces.
-        // Because of this transformations verbatim environments must be handled
+        // Because of these transformations verbatim environments must be handled
         // elsewhere (i.e., replaced with placeholders before passing the input
         // to this lexer).
 
@@ -55,12 +65,17 @@ class PhpLatex_Lexer
             $str
         );
 
-        // echo '<pre>INTERNAL: ', (htmlspecialchars($str)), '</pre>';
         $this->_str = $str;
         $this->_pos = 0;
 
         $this->_line = 1;
         $this->_column = 0;
+
+        $this->_pline = null;
+        $this->_pcolumn = null;
+
+        $this->_token = null;
+        $this->_tokenPosition = null;
     }
 
     public function current()
@@ -68,33 +83,20 @@ class PhpLatex_Lexer
         return $this->_token;
     }
 
+    /**
+     * @return array|false
+     */
     public function next()
     {
-        // This behavior can be illustrated by the following
-        // tests:
-
         $state = self::STATE_DEFAULT;
         $buf = '';
         $n = strlen($this->_str);
-        $p = null; // previous char
 
-        while ($this->_pos < $n + 1) {
-            $c = substr($this->_str, $this->_pos, 1);
-            $this->_pos++;
+        do {
+            $c = $this->_getChar();
 
-            $this->_pcolumn = $this->_column;
-            $this->_pline = $this->_line;
-
-            $this->_column++;
-
-            // substr('a', 1, 1) in PHP 5.x is false, whereas in 7+ is ''
-            if ($c === false || $c === '') {
-                $c = "\x00"; // artificial character after last char of input
-            }
-
-            // echo "STATE($state), CHAR(", $c == "\n" ? "\\n" : $c, "), BUF({$buf})\n";
             switch ($c) {
-                case "\x00":
+                case self::EOF:
                     switch ($state) {
                         case self::STATE_DEFAULT:
                             if (strlen($buf)) {
@@ -142,7 +144,7 @@ class PhpLatex_Lexer
                     }
                     break;
 
-                case " ":
+                case ' ':
                 case "\n":
                     switch ($state) {
                         case self::STATE_DEFAULT:
@@ -157,7 +159,6 @@ class PhpLatex_Lexer
                                 $this->_line++;
                                 $this->_column = 0;
                             }
-                            // if ($c === "\n") { increment line count }
                             break;
 
                         case self::STATE_BSLASH:
@@ -183,7 +184,6 @@ class PhpLatex_Lexer
                                 $this->_line++;
                                 $this->_column = 0;
                             }
-                            // if ($c === "\n") { increment line count }
                             break;
                     }
                     break;
@@ -329,26 +329,44 @@ class PhpLatex_Lexer
                     }
                     break;
             }
-
-            // remember previous char
-            $p = $c;
-        }
-
-        // close incomplete math environment
-
-        // echo 'BUF: ', $buf, '</br>';
+        } while ($c !== self::EOF);
 
         return false;
     }
 
+    /**
+     * @return string
+     */
+    protected function _getChar()
+    {
+        if ($this->_pos >= strlen($this->_str)) {
+            return self::EOF; // artificial symbol denoting end of input
+        }
+
+        $c = substr($this->_str, $this->_pos, 1);
+        $this->_pos++;
+
+        $this->_pcolumn = $this->_column;
+        $this->_pline = $this->_line;
+
+        $this->_column++;
+
+        return $c;
+    }
+
     protected function _ungetChar()
     {
+        if ($this->_pline === null) {
+            throw new RuntimeException('Too many unget calls');
+        }
+
         --$this->_pos;
         $this->_line = $this->_pline;
         $this->_column = $this->_pcolumn;
-    }
 
-    protected $_tokenPosition = null;
+        $this->_pline = null;
+        $this->_pcolumn = null;
+    }
 
     protected function storeTokenPosition()
     {
@@ -389,7 +407,9 @@ class PhpLatex_Lexer
      */
     protected function _setSpaceToken($value)
     {
-        assert(ctype_space($value));
+        if (!ctype_space($value)) {
+            throw new InvalidArgumentException('Whitespace value expected');
+        }
 
         if (substr_count($value, "\n") > 1) {
             return $this->_setToken(self::TYPE_CWORD, '\\par', $value);
