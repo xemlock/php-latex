@@ -1,0 +1,16 @@
+name: Feature Request
+description: Suggest an idea or feature for this project
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        #### Before submitting a feature request please consider _starring this project_, as it is the easiest way to support its maintenance and development. It also helps me decide which of my repositories to take most care of. Thank you.
+        ----
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A clear and concise description of the new feature
+    validations:
+      required: true

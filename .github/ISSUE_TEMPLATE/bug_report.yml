@@ -1,0 +1,29 @@
+name: Bug report
+description: Create a bug report with this project
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        #### Before raising an issue please consider _starring this project_, as it is the easiest way to support its maintenance and development. It also helps me decide which of my repositories to take most care of. Thank you.
+        ----
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A clear and concise description of the problem
+    validations:
+      required: true
+  - type: textarea
+    id: possible-solution
+    attributes:
+      label: Possible Solution
+      description: |
+        Optional: only if you have suggestions on a fix/reason for the bug
+        Don't hesitate to create a pull request with your solution, it helps get faster feedback.
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: |
+        Optional: any other context about the problem: log messages, screenshots, etc.
