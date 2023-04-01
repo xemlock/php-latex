@@ -24,7 +24,7 @@ class PhpLatex_Test_ParserTest extends PHPUnit_Framework_TestCase
         $this->assertSame($expected, PhpLatex_Renderer_Abstract::toLatex($tree));
     }
 
-    public function provideNewlines()
+    public static function provideNewlines()
     {
         return array(
             array(
@@ -74,7 +74,7 @@ class PhpLatex_Test_ParserTest extends PHPUnit_Framework_TestCase
         $this->assertSame($expected, PhpLatex_Renderer_Abstract::toLatex($tree));
     }
 
-    public function provideLeftRight()
+    public static function provideLeftRight()
     {
         return array(
             'with parenthesis' => array(
