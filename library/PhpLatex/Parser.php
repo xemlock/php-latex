@@ -510,7 +510,7 @@ class PhpLatex_Parser
         //
         // Donald E. Knuth, "TeXbook", Chapter 3
         //
-        // Skip all spaces and comments occuring after this token, if this
+        // Skip all spaces and comments occurring after this token, if this
         // token is a control word.
         if ($token['type'] === PhpLatex_Lexer::TYPE_CWORD) {
             $this->_skipSpaces();
@@ -632,7 +632,8 @@ class PhpLatex_Parser
         $skipped = array();
         while ($next = $this->_peek()) {
             if ($next['type'] === PhpLatex_Lexer::TYPE_SPACE ||
-                $next['type'] === PhpLatex_Lexer::TYPE_COMMENT
+                $next['type'] === PhpLatex_Lexer::TYPE_COMMENT ||
+                ($next['type'] === PhpLatex_Lexer::TYPE_SPECIAL && $next['value'] === '%')
             ) {
                 $skipped[] = $next;
                 $this->_next();
@@ -700,6 +701,10 @@ class PhpLatex_Parser
                             $node->appendTo($group);
 
                             return $group;
+
+                        case '%':
+                            // comment start
+                            break;
 
                         default:
                             // other specials (~ ^ _ & # $) are silently ignored
@@ -786,7 +791,8 @@ class PhpLatex_Parser
     {
         while (false !== ($next = $this->_peek())) {
             if ($next['type'] === PhpLatex_Lexer::TYPE_SPACE ||
-                $next['type'] === PhpLatex_Lexer::TYPE_COMMENT
+                $next['type'] === PhpLatex_Lexer::TYPE_COMMENT ||
+                ($next['type'] === PhpLatex_Lexer::TYPE_SPECIAL && $next['value'] === '%')
             ) {
                 // 1. skip spaces and comments
                 $this->_next();

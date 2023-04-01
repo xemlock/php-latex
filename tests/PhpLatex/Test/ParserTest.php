@@ -108,4 +108,24 @@ class PhpLatex_Test_ParserTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    public function testCommentBetweenCommandAndArgs()
+    {
+        $tree = $this->parser->parse("\\textbf % comment\nA B");
+        $this->assertSame("\\textbf{A} B", PhpLatex_Renderer_Abstract::toLatex($tree));
+
+        $tree = $this->parser->parse("\\textbf % comment\n {A B}");
+        $this->assertSame("\\textbf{A B}", PhpLatex_Renderer_Abstract::toLatex($tree));
+    }
+
+    public function testCommendBetweenBeginAndEnvironmentName()
+    {
+        $tree = $this->parser->parse("\\begin % comment\n{displaymath}1 + 2\\end{displaymath}");
+        $this->assertSame("\\begin{displaymath}\n1 + 2\n\\end{displaymath}", PhpLatex_Renderer_Abstract::toLatex($tree));
+    }
+
+    public function testNewlinesAfterComment()
+    {
+        $tree = $this->parser->parse("A% comment\n\nB");
+        $this->assertSame("A\par B", PhpLatex_Renderer_Abstract::toLatex($tree));
+    }
 }

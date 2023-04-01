@@ -8,6 +8,7 @@ class PhpLatex_Lexer
     const STATE_BSLASH  = 1;
     const STATE_CONTROL = 2;
     const STATE_SPACE   = 3;
+    const STATE_COMMENT = 4;
 
     const TYPE_TEXT     = 'text';
     const TYPE_SPACE    = 'space';
@@ -29,6 +30,8 @@ class PhpLatex_Lexer
      * @var array|null
      */
     protected $_token;
+
+    protected $_state;
 
     /**
      * @var array|null
@@ -76,6 +79,8 @@ class PhpLatex_Lexer
 
         $this->_token = null;
         $this->_tokenPosition = null;
+
+        $this->_state = self::STATE_DEFAULT;
     }
 
     public function current()
@@ -88,15 +93,38 @@ class PhpLatex_Lexer
      */
     public function next()
     {
-        $state = self::STATE_DEFAULT;
         $buf = '';
 
         do {
+            // special handling for comments - if we're in the comment state parse everything up to first newline
+            // no need to match it char by char
+            if ($this->_state === self::STATE_COMMENT) {
+                // at this point $this->_pos points to first char after '%' which started the comment.
+                // _line and _column still point to position of '%'
+                // The \G assertion is true only when the current matching position is at the start
+                // point of the match, as specified by the offset argument.
+                // https://www.php.net/manual/en/regexp.reference.escape.php
+                preg_match('#\G(?<comment>.*)#', $this->_str, $matches, 0, $this->_pos);
+
+                if (strlen($matches['comment'])) {
+                    $this->_column++; // normally column would be incremented in _getChar()
+                    $this->storeTokenPosition();
+
+                    // adjust counters, so that call to _getChar()
+                    $this->_pos += strlen($matches['comment']);
+                    $this->_column += strlen($matches['comment']) - 1;
+
+                    return $this->_setToken(self::TYPE_COMMENT, $matches['comment']);
+                } else {
+                    $this->_state = self::STATE_DEFAULT;
+                }
+            }
+
             $c = $this->_getChar();
 
             switch ($c) {
                 case self::EOF:
-                    switch ($state) {
+                    switch ($this->_state) {
                         case self::STATE_DEFAULT:
                             if (strlen($buf)) {
                                 return $this->_setToken(self::TYPE_TEXT, $buf);
@@ -116,7 +144,7 @@ class PhpLatex_Lexer
                     break;
 
                 case "\\":
-                    switch ($state) {
+                    switch ($this->_state) {
                         case self::STATE_DEFAULT:
                             // if there is something in the buffer return it
                             // before switching state
@@ -124,7 +152,7 @@ class PhpLatex_Lexer
                                 $this->_ungetChar();
                                 return $this->_setToken(self::TYPE_TEXT, $buf);
                             }
-                            $state = self::STATE_BSLASH;
+                            $this->_state = self::STATE_BSLASH;
                             $buf = "\\";
                             $this->storeTokenPosition();
                             break;
@@ -145,13 +173,13 @@ class PhpLatex_Lexer
 
                 case ' ':
                 case "\n":
-                    switch ($state) {
+                    switch ($this->_state) {
                         case self::STATE_DEFAULT:
                             if (strlen($buf)) {
                                 $this->_ungetChar();
                                 return $this->_setToken(self::TYPE_TEXT, $buf);
                             }
-                            $state = self::STATE_SPACE;
+                            $this->_state = self::STATE_SPACE;
                             $buf = $c;
                             $this->storeTokenPosition();
                             if ($c === "\n") {
@@ -168,7 +196,7 @@ class PhpLatex_Lexer
                             if ($c === ' ') {
                                 return $this->_setToken(self::TYPE_CSYMBOL, '\\ ');
                             }
-                            $state = self::STATE_DEFAULT;
+                            $this->_state = self::STATE_DEFAULT;
                             $this->_ungetChar();
                             break;
 
@@ -188,7 +216,7 @@ class PhpLatex_Lexer
                     break;
 
                 case '%':
-                    switch ($state) {
+                    switch ($this->_state) {
                         case self::STATE_DEFAULT:
                             // there may be something in buffer, if so, return
                             // it before returning this token
@@ -218,16 +246,9 @@ class PhpLatex_Lexer
 
                             $this->storeTokenPosition();
 
-                            // at this point $this->_pos points to next char, and the offset of a '%' is pos - 1
-
-                            // The \G assertion is true only when the current matching position is at the start
-                            // point of the match, as specified by the offset argument.
-                            // https://www.php.net/manual/en/regexp.reference.escape.php
-                            preg_match('#\G(?<comment>%.*)#', $this->_str, $matches, 0, $this->_pos - 1);
-                            $this->_pos += strlen($matches['comment']) - 1;
-                            $this->_column += strlen($matches['comment']) - 1;
-
-                            return $this->_setToken(self::TYPE_COMMENT, $matches['comment']);
+                            $token = $this->_setToken(self::TYPE_SPECIAL, '%');
+                            $this->_state = self::STATE_COMMENT;
+                            return $token;
 
                         case self::STATE_BSLASH:
                             return $this->_setToken(self::TYPE_CSYMBOL, '\\%');
@@ -240,6 +261,13 @@ class PhpLatex_Lexer
                         case self::STATE_SPACE:
                             $this->_ungetChar();
                             return $this->_setSpaceToken($buf);
+
+                        case self::STATE_COMMENT:
+                            if (!strlen($buf)) {
+                                $this->storeTokenPosition();
+                            }
+                            $buf .= $c;
+                            break;
                     }
                     break;
 
@@ -257,7 +285,7 @@ class PhpLatex_Lexer
                 case '$':
                 case '[': // square brackets are considered special symbols, as
                 case ']': // they delimit optional arguments
-                    switch ($state) {
+                    switch ($this->_state) {
                         case self::STATE_DEFAULT:
                             // there may be something in buffer, if so, return
                             // it before returning this token
@@ -285,7 +313,7 @@ class PhpLatex_Lexer
                     break;
 
                 default:
-                    switch ($state) {
+                    switch ($this->_state) {
                         case self::STATE_DEFAULT:
                             if ($buf === '') {
                                 $this->storeTokenPosition();
@@ -295,7 +323,7 @@ class PhpLatex_Lexer
 
                         case self::STATE_BSLASH:
                             if ($this->_isAlpha($c)) {
-                                $state = self::STATE_CONTROL;
+                                $this->_state = self::STATE_CONTROL;
                                 $buf .= $c;
                             } else {
                                 // single non-letter -> control symbol, i.e., \^
@@ -377,6 +405,7 @@ class PhpLatex_Lexer
         if (isset($raw)) {
             $token['raw'] = $raw; // raw whitespace value
         }
+        $this->_state = self::STATE_DEFAULT;
         return $this->_token = $token;
     }
 
