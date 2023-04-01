@@ -18,10 +18,13 @@ class PhpLatex_PdfLatex
     protected $_log;
 
     /**
-     * @var string
+     * @var array
      */
-    protected $_pdflatexBinary;
+    protected $_compiler;
 
+    /**
+     * @return string
+     */
     public function getPdflatexBinary()
     {
         // lstat(./pdflatex) failed ...
@@ -29,23 +32,51 @@ class PhpLatex_PdfLatex
         // pdflatex: ../../../texk/kpathsea/progname.c:316: remove_dots: Assertion `ret' failed.
         // Aborted
 
-        // Solution: Use full path to the pdflatex binary
-        if ($this->_pdflatexBinary === null) {
-            $this->_pdflatexBinary = $this->findPdflatexBinary();
+        // Solution: Use the full path to the pdflatex binary
+        if ($this->_compiler === null) {
+            $this->setPdflatexBinary($this->findPdflatexBinary());
         }
-        return $this->_pdflatexBinary;
+        return $this->_compiler['path'];
     }
 
     public function setPdflatexBinary($path)
     {
-        if (!file_exists($path)) {
-            throw new Exception('Pdflatex binary not found: ' . $path);
+        // Can't use file_exists() / is_executable(), because if open_basedir ini setting is in
+        // effect, file won't be reported as existing/executable, but the binary itself can still
+        // exist outside the open_basedir, and be executable.
+        exec(escapeshellarg($path) . ' -version 2>&1', $output, $error);
+
+        if ($error) {
+            throw new InvalidArgumentException('Unable to execute pdflatex binary: ' . $path);
         }
-        if (!is_executable($path)) {
-            throw new Exception('Pdflatex binary is not executable: ' . $path);
+
+        $compiler = $this->_parseCompilerInfo($output[0]);
+        if (!$compiler) {
+            throw new InvalidArgumentException('Unrecognized pdflatex -version output');
         }
-        $this->_pdflatexBinary = realpath($path);
+
+        $this->_compiler = array(
+            'path' => $path, // open_basedir may be in effect, don't use realpath()
+            'engine' => $compiler['engine'],
+            'version' => $compiler['version'],
+        );
+
         return $this;
+    }
+
+    /**
+     * @param string $version
+     * @internal This function is not part of the public api.
+     */
+    public function _parseCompilerInfo($version)
+    {
+        if (preg_match("/(?P<engine>\S*?TeX) (?P<version>\d[^\n]+)/i", $version, $match)) {
+            return array('engine' => $match['engine'], 'version' => $match['version']);
+        }
+        if (preg_match("/(?P<engine>\S*?TeX), Version (?P<version>[^\n]+)/i", $version, $match)) {
+            return array('engine' => $match['engine'], 'version' => $match['version']);
+        }
+        return false;
     }
 
     public function findPdflatexBinary()
