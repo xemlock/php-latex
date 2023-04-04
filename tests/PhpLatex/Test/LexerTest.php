@@ -10,7 +10,8 @@ class PhpLatex_Test_LexerTest extends PHPUnit_Framework_TestCase
                 array('type' => PhpLatex_Lexer::TYPE_TEXT, 'value' => 'A', 'line' => 1, 'column' => 1),
                 array('type' => PhpLatex_Lexer::TYPE_SPACE, 'value' => ' ', 'raw' => ' ', 'line' => 1, 'column' => 2),
                 array('type' => PhpLatex_Lexer::TYPE_SPECIAL, 'value' => '%', 'line' => 1, 'column' => 3),
-                array('type' => PhpLatex_Lexer::TYPE_COMMENT, 'value' => ' comment', 'line' => 1, 'column' => 4),
+                array('type' => PhpLatex_Lexer::TYPE_SPACE, 'value' => ' ', 'raw' => ' ', 'line' => 1, 'column' => 4),
+                array('type' => PhpLatex_Lexer::TYPE_TEXT, 'value' => 'comment', 'line' => 1, 'column' => 5),
                 array('type' => PhpLatex_Lexer::TYPE_SPACE, 'value' => ' ', 'raw' => "\n", 'line' => 1, 'column' => 12),
                 array('type' => PhpLatex_Lexer::TYPE_TEXT, 'value' => 'B', 'line' => 2, 'column' => 1),
             )
@@ -49,7 +50,8 @@ class PhpLatex_Test_LexerTest extends PHPUnit_Framework_TestCase
         }
         $this->assertEquals(array(
             array('type' => PhpLatex_Lexer::TYPE_SPECIAL, 'value' => '%', 'line' => 1, 'column' => 1),
-            array('type' => PhpLatex_Lexer::TYPE_COMMENT, 'value' => ' A', 'line' => 1, 'column' => 2),
+            array('type' => PhpLatex_Lexer::TYPE_SPACE, 'value' => ' ', 'raw' => ' ', 'line' => 1, 'column' => 2),
+            array('type' => PhpLatex_Lexer::TYPE_TEXT, 'value' => 'A', 'line' => 1, 'column' => 3),
         ), $tokens);
     }
 
@@ -96,12 +98,27 @@ End.
                 array('type' => PhpLatex_Lexer::TYPE_SPECIAL, 'value' => '}', 'line' => 5, 'column' => 15),
                 array('type' => PhpLatex_Lexer::TYPE_SPACE, 'value' => ' ', 'raw' => ' ', 'line' => 5, 'column' => 16),
                 array('type' => PhpLatex_Lexer::TYPE_SPECIAL, 'value' => '%', 'line' => 5, 'column' => 17),
-                array('type' => PhpLatex_Lexer::TYPE_COMMENT, 'value' => ' comment in math mode', 'line' => 5, 'column' => 18),
+                array('type' => PhpLatex_Lexer::TYPE_SPACE, 'value' => ' ', 'raw' => ' ', 'line' => 5, 'column' => 18),
+                array('type' => PhpLatex_Lexer::TYPE_TEXT, 'value' => 'comment', 'line' => 5, 'column' => 19),
+                array('type' => PhpLatex_Lexer::TYPE_SPACE, 'value' => ' ', 'raw' => ' ', 'line' => 5, 'column' => 26),
+                array('type' => PhpLatex_Lexer::TYPE_TEXT, 'value' => 'in', 'line' => 5, 'column' => 27),
+                array('type' => PhpLatex_Lexer::TYPE_SPACE, 'value' => ' ', 'raw' => ' ', 'line' => 5, 'column' => 29),
+                array('type' => PhpLatex_Lexer::TYPE_TEXT, 'value' => 'math', 'line' => 5, 'column' => 30),
+                array('type' => PhpLatex_Lexer::TYPE_SPACE, 'value' => ' ', 'raw' => ' ', 'line' => 5, 'column' => 34),
+                array('type' => PhpLatex_Lexer::TYPE_TEXT, 'value' => 'mode', 'line' => 5, 'column' => 35),
                 array('type' => PhpLatex_Lexer::TYPE_SPACE, 'value' => ' ', 'raw' => "\n", 'line' => 5, 'column' => 39),
                 array('type' => PhpLatex_Lexer::TYPE_CSYMBOL, 'value' => '\]', 'line' => 6, 'column' => 1),
                 array('type' => PhpLatex_Lexer::TYPE_CWORD, 'value' => '\par', 'raw' => "\n\n", 'line' => 6, 'column' => 3),
                 array('type' => PhpLatex_Lexer::TYPE_SPECIAL, 'value' => '%', 'line' => 8, 'column' => 1),
-                array('type' => PhpLatex_Lexer::TYPE_COMMENT, 'value' => '% Comment in text mode', 'line' => 8, 'column' => 2),
+                array('type' => PhpLatex_Lexer::TYPE_SPECIAL, 'value' => '%', 'line' => 8, 'column' => 2),
+                array('type' => PhpLatex_Lexer::TYPE_SPACE, 'value' => ' ', 'raw' => ' ', 'line' => 8, 'column' => 3),
+                array('type' => PhpLatex_Lexer::TYPE_TEXT, 'value' => 'Comment', 'line' => 8, 'column' => 4),
+                array('type' => PhpLatex_Lexer::TYPE_SPACE, 'value' => ' ', 'raw' => ' ', 'line' => 8, 'column' => 11),
+                array('type' => PhpLatex_Lexer::TYPE_TEXT, 'value' => 'in', 'line' => 8, 'column' => 12),
+                array('type' => PhpLatex_Lexer::TYPE_SPACE, 'value' => ' ', 'raw' => ' ', 'line' => 8, 'column' => 14),
+                array('type' => PhpLatex_Lexer::TYPE_TEXT, 'value' => 'text', 'line' => 8, 'column' => 15),
+                array('type' => PhpLatex_Lexer::TYPE_SPACE, 'value' => ' ', 'raw' => ' ', 'line' => 8, 'column' => 19),
+                array('type' => PhpLatex_Lexer::TYPE_TEXT, 'value' => 'mode', 'line' => 8, 'column' => 20),
                 array('type' => PhpLatex_Lexer::TYPE_SPACE, 'value' => ' ', 'raw' => "\n", 'line' => 8, 'column' => 24),
                 array('type' => PhpLatex_Lexer::TYPE_TEXT, 'value' => 'End.', 'line' => 9, 'column' => 1),
             )

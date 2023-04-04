@@ -276,7 +276,7 @@ class PhpLatex_Parser
                     return $this->_parseText($token, $state);
 
                 case PhpLatex_Lexer::TYPE_COMMENT:
-                    $this->_skipSpaces();
+                    $this->_skipSpacesAndComments();
                     break;
 
                 default:
@@ -513,7 +513,7 @@ class PhpLatex_Parser
         // Skip all spaces and comments occurring after this token, if this
         // token is a control word.
         if ($token['type'] === PhpLatex_Lexer::TYPE_CWORD) {
-            $this->_skipSpaces();
+            $this->_skipSpacesAndComments();
         }
 
         $mathWrapper = null;
@@ -624,29 +624,32 @@ class PhpLatex_Parser
      *
      * After this function has run current token, if exists, is neither space
      * nor comment.
-     *
-     * @return array skipped SPACE and COMMENT tokens
      */
-    protected function _skipSpaces()
+    protected function _skipSpacesAndComments($inComment = false)
     {
-        $skipped = array();
         while ($next = $this->_peek()) {
-            if ($next['type'] === PhpLatex_Lexer::TYPE_SPACE ||
-                $next['type'] === PhpLatex_Lexer::TYPE_COMMENT ||
-                ($next['type'] === PhpLatex_Lexer::TYPE_SPECIAL && $next['value'] === '%')
-            ) {
-                $skipped[] = $next;
-                $this->_next();
+            if ($inComment) {
+                if (isset($next['raw']) && strpos($next['raw'], "\n") !== false) {
+                    $inComment = false;
+                } else {
+                    $this->_next();
+                }
             } else {
-                break;
+                if ($next['type'] === PhpLatex_Lexer::TYPE_SPECIAL && $next['value'] === '%') {
+                    $inComment = true;
+                    $this->_next();
+                } else if ($next['type'] === PhpLatex_Lexer::TYPE_SPACE) {
+                    $this->_next();
+                } else {
+                    break;
+                }
             }
         }
-        return $skipped;
     }
 
     protected function _parseArg($mode, $environ, $parseArgs = true) // {{{
     {
-        $this->_skipSpaces();
+        $this->_skipSpacesAndComments();
 
         if ($next = $this->_peek()) {
             switch ($next['type']) {
@@ -761,7 +764,7 @@ class PhpLatex_Parser
      */
     protected function _parseOptArg($state, $environ) // {{{
     {
-        $this->_skipSpaces();
+        $this->_skipSpacesAndComments();
 
         if (($next = $this->_peek()) &&
             ($next['type'] === PhpLatex_Lexer::TYPE_SPECIAL) &&
@@ -789,16 +792,11 @@ class PhpLatex_Parser
      */
     protected function _parseEnvName() // {{{
     {
-        while (false !== ($next = $this->_peek())) {
-            if ($next['type'] === PhpLatex_Lexer::TYPE_SPACE ||
-                $next['type'] === PhpLatex_Lexer::TYPE_COMMENT ||
-                ($next['type'] === PhpLatex_Lexer::TYPE_SPECIAL && $next['value'] === '%')
-            ) {
-                // 1. skip spaces and comments
-                $this->_next();
-                continue;
+        // 1. Skip spaces and comments
+        $this->_skipSpacesAndComments();
 
-            } elseif ($next['value'] !== '{') {
+        while (false !== ($next = $this->_peek())) {
+            if ($next['value'] !== '{') {
                 // 2A. first encountered non-space token is not a curly bracket
                 // Since start of group was expected, this token breaks opening
                 // of an environment. Give it back and report failure.
@@ -959,6 +957,10 @@ class PhpLatex_Parser
                 $node->value = $value;
                 return $node;
 
+            case '%':
+                $this->_skipSpacesAndComments(true);
+                break;
+
             case '#':
                 // currently not supported
                 break;
@@ -981,7 +983,7 @@ class PhpLatex_Parser
 
         $environs = (array) $environs;
 
-        $this->_skipSpaces();
+        $this->_skipSpacesAndComments();
         $next = $this->_peek();
         if (!$next) {
             return false;

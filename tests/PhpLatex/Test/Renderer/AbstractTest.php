@@ -41,7 +41,7 @@ cell 1
         \eta_{12} \\\\
         \eta_{21} \\\\
         \eta_2
-    \end{array}
+    \end{array} % comment is here
 \]';
 
         $parser = new PhpLatex_Parser();
