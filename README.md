@@ -26,7 +26,7 @@ Basic usage is as follows:
 
 ```php
 $parser = new PhpLatex_Parser();
-$parsedTree = $this->parse($input);
+$parsedTree = $parser->parse($input);
 // $parsedTree contains object representation of the LaTeX document
 ```
 
