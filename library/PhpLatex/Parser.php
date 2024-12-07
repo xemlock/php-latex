@@ -318,6 +318,7 @@ class PhpLatex_Parser
         assert(($mode & ($mode - 1)) === 0); // mode must be a power of 2
 
         $math = false;
+        $optArgs = array();
         $args = array();
 
         if (isset($this->_environs[$name])) {
@@ -342,12 +343,23 @@ class PhpLatex_Parser
             // or displaymath), if so, prepare math node instead of environ node
             $math = isset($spec['math']) && $spec['math'];
 
+            $parseArgs = isset($spec['parseArgs']) ? $spec['parseArgs'] : true;
+
+            $numOptArgs = isset($spec['numOptArgs']) ? intval($spec['numOptArgs']) : 0;
+            while (count($optArgs) < $numOptArgs) {
+                if (false !== ($arg = $this->_parseOptArg($mode, $environ, $parseArgs))) {
+                    $optArgs[] = $arg;
+                } else {
+                    break;
+                }
+            }
+
             // parse args, will be placed as environs first children, with
             // no spaces between them, btw: \begin{tabular}c is a perfectly
             // correct specification for a single-column table.
             $nargs = isset($spec['numArgs']) ? intval($spec['numArgs']) : 0;
             while (count($args) < $nargs) {
-                if (false === ($arg = $this->_parseArg($mode, $environ))) {
+                if (false === ($arg = $this->_parseArg($mode, $environ, $parseArgs))) {
                     $arg = $this->_createNode(self::TYPE_GROUP, $mode);
                 }
                 $arg->setProp('arg', true);
@@ -362,6 +374,10 @@ class PhpLatex_Parser
 
         if ($math) {
             $node->math = $math;
+        }
+
+        foreach ($optArgs as $arg) {
+            $node->appendChild($arg);
         }
 
         foreach ($args as $arg) {
