@@ -17,46 +17,55 @@ class PhpLatex_Utils_PeekableArrayIterator
         reset($this->_array);
     }
 
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return current($this->_array);
     }
 
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return key($this->_array);
     }
 
+    #[\ReturnTypeWillChange]
     public function next()
     {
-        return next($this->_array);
+        next($this->_array);
     }
 
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
-        return reset($this->_array);
+        reset($this->_array);
     }
 
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         return key($this->_array) !== null;
     }
 
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return count($this->_array);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         return isset($this->_array[$offset]);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return isset($this->_array[$offset]) ? $this->_array[$offset] : null;
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value) {
         if (is_null($offset)) {
             $this->_array[] = $value;
@@ -65,6 +74,7 @@ class PhpLatex_Utils_PeekableArrayIterator
         }
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         unset($this->_array[$offset]);
@@ -77,7 +87,7 @@ class PhpLatex_Utils_PeekableArrayIterator
 
     public function __unset($offset)
     {
-        $this->_offsetUnset($offset);
+        $this->offsetUnset($offset);
     }
 
     public function peek()
