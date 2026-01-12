@@ -126,14 +126,14 @@ class PhpLatex_PdfLatex
         return $this->_buildDir;
     }
 
-    public function compile($file, array $files = null)
+    public function compile($file, array $files = array())
     {
         $this->_log = null;
 
         $cwd = getcwd();
         $dir = dirname($file);
 
-        foreach ((array) $files as $path) {
+        foreach ($files as $path) {
             // TODO handle Windows
             if (!is_file($dir . '/' . basename($path))) {
                 if (!@symlink($path, $dir . '/' . basename($path))) {
@@ -183,7 +183,7 @@ class PhpLatex_PdfLatex
      * @return string Path to compiled PDF document
      * @throws Exception
      */
-    public function compileString($script, array $files = null)
+    public function compileString($script, array $files = array())
     {
         $buildDir = $this->getBuildDir() . 'pdflatex/' . md5($script);
         $output = $buildDir . '/output.pdf';

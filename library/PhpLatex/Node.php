@@ -15,14 +15,14 @@ class PhpLatex_Node
      * @param mixed $type
      * @param array $props
      */
-    public function __construct($type, array $props = null)
+    public function __construct($type, array $props = array())
     {
         $this->_type = $type;
 
         // _props and _children properties are lazily-initialized
         // on first write
 
-        if (null !== $props) {
+        if ($props) {
             $this->setProps($props);
         }
     }
@@ -98,7 +98,7 @@ class PhpLatex_Node
      */
     public function getProps()
     {
-        return (array) $this->_props;
+        return $this->_props;
     }
 
     /**

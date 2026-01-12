@@ -622,7 +622,7 @@ class PhpLatex_Renderer_Html extends PhpLatex_Renderer_Abstract
         return (string) $render;
     }
 
-    protected function _wrapStyle($render, array $diff = null)
+    protected function _wrapStyle($render, array $diff = array())
     {
         $tags = array();
         $style = array();
