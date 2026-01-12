@@ -132,6 +132,6 @@ class PhpLatex_Test_ParserTest extends PHPUnit_Framework_TestCase
     public function testEnvironmentWithArgsConfig()
     {
         $tree = $this->parser->parse("\\begin{tabular}[t]{|c|c|c|}\ncell1 & cell2 & cell3\n\\end{tabular}");
-        $this->assertSame("\\begin{tabular}[{t}]{|c|c|c|}\ncell1 & cell2 & cell3\n\\end{tabular}", PhpLatex_Renderer_Abstract::toLatex($tree));
+        $this->assertSame("\\begin{tabular}[{t}]{|c|c|c|}\n cell1 & cell2 & cell3 \n\\end{tabular}", PhpLatex_Renderer_Abstract::toLatex($tree));
     }
 }
