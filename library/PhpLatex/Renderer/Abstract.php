@@ -55,6 +55,32 @@ abstract class PhpLatex_Renderer_Abstract
                         }
                         return $value;
                     }
+
+                    if ($node->value === '\\href' || $node->value === '\\url') {
+                        foreach ($node->getChildren() as $index => $child) {
+                            if ($index === 0) {
+                                $url = $child->getChild(0);
+                                if ($url) {
+                                    // The special characters # and % do not need to be escaped in any way (unless
+                                    // the command is used in the argument of another command).
+                                    // https://texdoc.org/serve/hyperref/0
+
+                                    // Only control words (i.e. starting with a backslash) cause miscellaneous errors, among others:
+                                    // - You've closed more groups than you opened.
+                                    // - TeX capacity exceeded, sorry
+                                    // - Paragraph ended before \hyper@n@rmalise was complete.
+                                    // all other characters, normally treated as special, lose their meanings inside \href and \url
+                                    $value .= '{' . str_replace('\\', '\\\\', (string) $url->value) . '}';
+                                } else {
+                                    $value .= '{}';
+                                }
+                            } else {
+                                $value .= self::toLatex($child);
+                            }
+                        }
+                        return $value;
+                    }
+
                     if ($node->symbol || $node->hasChildren()) {
                         return $value . self::toLatex($node->getChildren());
                     }

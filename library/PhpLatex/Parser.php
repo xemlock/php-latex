@@ -581,6 +581,11 @@ class PhpLatex_Parser
             // parse arguments
             $numArgs = isset($spec['numArgs']) ? intval($spec['numArgs']) : 0;
 
+            // handle special cases for \url and \href commands
+            if ($value === '\\href' || $value === '\\url') {
+                $nodeArgs[] = $this->_parseUrl();
+            }
+
             while (count($nodeArgs) < $numArgs) {
                 if (false === ($arg = $this->_parseArg($nodeMode, $environ, $parseArgs))) {
                     // no argument found, create an artificial one
@@ -1045,6 +1050,64 @@ class PhpLatex_Parser
         $node->value = $token['value'] . $delimiter;
         $node->noSpaceAfter = true;
         return $node;
+    }
+
+    /**
+     * Parse URL agrument of \href and \url commands
+     *
+     * @return PhpLatex_Node
+     */
+    protected function _parseUrl()
+    {
+        $content = '';
+        // skip comments and spaces before '{'
+        $this->_skipSpacesAndComments();
+
+        $arg = $this->_createNode(self::TYPE_GROUP, self::MODE_TEXT);
+
+        // expect an argument to be present
+        $next = $this->_peek();
+        if ($next['type'] !== PhpLatex_Lexer::TYPE_SPECIAL || $next['value'] !== '{') {
+            return $arg;
+        } else {
+            $this->_next();
+        }
+
+        // keep track of nested curly brackets
+        $nesting = 0;
+        while ($next = $this->_next()) {
+            if ($next['type'] === PhpLatex_Lexer::TYPE_SPECIAL) {
+                if ($next['value'] === '{') {
+                    ++$nesting;
+                } elseif ($next['value'] === '}') {
+                    // check if it's the end of the nested group, or the end of url argument
+                    if ($nesting === 0) {
+                        // end of url argument
+                        break;
+                    }
+                    --$nesting;
+                }
+            }
+
+            // unescape symbols
+            // in the urls backslash is escaped simply as '\\'
+            if ($next['type'] === PhpLatex_Lexer::TYPE_CSYMBOL) {
+                $content .= substr($next['value'], 1);
+            } else {
+                $content .= isset($next['raw']) ? $next['raw'] : $next['value'];
+            }
+        }
+
+        $content = trim($content);
+
+        // LF in urls are ignored
+        $content = str_replace("\n", '', $content);
+
+        $url = $this->_createNode(self::TYPE_TEXT, self::MODE_TEXT);
+        $url->value = $content;
+        $arg->addChild($url);
+
+        return $arg;
     }
 
     /**

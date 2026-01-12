@@ -7,6 +7,8 @@ class PhpLatex_Node
 {
     protected $_type;
     protected $_props;
+
+    /** @var PhpLatex_Node[] */
     protected $_children = array();
 
     /**
@@ -65,7 +67,7 @@ class PhpLatex_Node
     }
 
     /**
-     * @return array
+     * @return PhpLatex_Node[]
      */
     public function getChildren()
     {
