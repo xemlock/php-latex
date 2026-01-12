@@ -97,7 +97,7 @@ abstract class PhpLatex_Renderer_Abstract
                     $argsEnd = 0;
 
                     foreach ($children as $child) {
-                        if ($child->arg) {
+                        if ($child->arg || $child->optional) {
                             ++$argsEnd;
                         } else {
                             break;
