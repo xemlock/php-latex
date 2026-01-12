@@ -24,9 +24,9 @@ cell 1
 
         $this->assertEquals(
 '\begin{tabular}{ |c|c|c| }
- \hline cell1 & cell2 & cell3 \\\\ cell4 & cell5 & cell6 \\\\ cell7 & cell8 & cell9 \\\\ \hline' . ' ' . '
+ \hline cell1 & cell2 & cell3 \\\\ cell4 & cell5 & cell6 \\\\ cell7 & cell8 & cell9 \\\\ \hline
 \end{tabular}\par \begin{tabular}{c}
- cell 1'. ' ' . '
+ cell 1
 \end{tabular}\par {\huge Foobar}', $output);
     }
 
@@ -48,7 +48,7 @@ cell 1
         $output = PhpLatex_Renderer_Abstract::toLatex($parser->parse($input));
 
         $this->assertEquals('\[ \begin{array}{c}
- \eta _{1} \\\\ \eta _{12} \\\\ \eta _{21} \\\\ \eta _{2}' . ' ' . '
+ \eta _{1} \\\\ \eta _{12} \\\\ \eta _{21} \\\\ \eta _{2}
 \end{array} \]', $output);
     }
 }

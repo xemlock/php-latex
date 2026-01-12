@@ -108,7 +108,7 @@ abstract class PhpLatex_Renderer_Abstract
                     $children = array_slice($children, $argsEnd);
 
                     return "\\begin{" . $node->value . "}" . self::toLatex($args) . "\n"
-                         . self::toLatex($children) . "\n"
+                         . rtrim(self::toLatex($children)) . "\n"
                          . "\\end{" . $node->value . "}";
 
                 case PhpLatex_Parser::TYPE_DOCUMENT:
