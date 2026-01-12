@@ -84,7 +84,11 @@ uksort($commands, function ($a, $b) {
 });
 
 $php = str_replace('  ', '    ', var_export($commands, true));
+$php = preg_replace('#^array \(#', 'array(', $php);
 $php = preg_replace('#\s+=>\s+array \(#', " => array(", $php);
 
-file_put_contents(dirname(__FILE__) . '/../library/PhpLatex/commands.php', '<?php return ' . $php . ";\n");
+file_put_contents(
+    dirname(__FILE__) . '/../library/PhpLatex/commands.php',
+    "<?php // File generated automatically by " . basename(__FILE__) . " script. DO NOT EDIT.\n\nreturn {$php};\n"
+);
 

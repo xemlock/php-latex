@@ -1,4 +1,6 @@
-<?php return array (
+<?php // File generated automatically by compile.php script. DO NOT EDIT.
+
+return array(
     '\\ ' => array(
         'mode' => 'both',
         'numArgs' => 0,
