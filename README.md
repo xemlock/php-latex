@@ -15,7 +15,7 @@ not supported you can either define it manually (see description below), or file
 To use php-latex, you install it just as any other php package - with [Composer](https://getcomposer.org/).
 
 ```
-composer require xemlock/php-latex:dev-master
+composer require xemlock/php-latex
 ```
 
 ## Usage
